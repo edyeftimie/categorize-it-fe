@@ -6,8 +6,8 @@ class User {
   const User({required this.id, required this.email, this.username});
 
   factory User.fromJson(Map<String, dynamic> j) => User(
-    id: j['userId'] as String,
+    id: j['id'] as String,
     email: j['email'] as String,
-    username: j['name'] as String?,
+    username: j['username'] as String?,
   );
 }

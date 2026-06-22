@@ -8,7 +8,7 @@ class AuthResult {
 
   factory AuthResult.fromJson(Map<String, dynamic> j) => AuthResult(
     token: j['token'] as String,
-    user: User.fromJson(j),
+    user: User.fromJson(j['user']),
   );
 }
 

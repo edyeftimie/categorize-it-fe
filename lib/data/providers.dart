@@ -20,6 +20,13 @@ import 'mock/mock_recommendation_repository.dart';
 import 'mock/mock_transaction_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/services/connectivity_service.dart';
+import 'package:dio/dio.dart';
+import '../core/services/token_storage.dart';
+import '../core/network/dio_client.dart';
+import 'package:dio/dio.dart';
+import '../core/services/token_storage.dart';
+import '../core/network/dio_client.dart';
+import 'api/auth_repository.dart';
 
 final connectivityServiceProvider = Provider<ConnectivityService>((ref) {
   final service = ConnectivityService();
@@ -32,8 +39,61 @@ final isConnectedProvider = StreamProvider<bool>((ref) {
   return ref.watch(connectivityServiceProvider).stream;
 });
 
+final tokenStorageProvider = Provider<TokenStorage>((ref) => TokenStorage());
+
+final dioProvider = Provider<Dio>((ref) {
+  final tokenStorage = ref.read(tokenStorageProvider);
+  return DioClient(tokenStorage).dio;
+});
+
+// Auth state: loading = checking stored token; data(null) = unauthenticated; data(user) = authenticated
+class AuthController extends StateNotifier<AsyncValue<User?>> {
+  final IAuthRepository _repo;
+
+  AuthController(this._repo) : super(const AsyncValue.loading()) {
+    _init();
+  }
+
+  Future<void> _init() async {
+    try {
+      final user = await _repo.getCurrentUser();
+      state = AsyncValue.data(user);
+    } catch (_) {
+      state = const AsyncValue.data(null);
+    }
+  }
+
+  Future<void> login({required String email, required String password}) async {
+    final result = await _repo.login(email: email, password: password);
+    state = AsyncValue.data(result.user);
+  }
+
+  Future<void> register({required String email, required String password, required String username}) async {
+    final result = await _repo.register(email: email, password: password, username: username);
+    state = AsyncValue.data(result.user);
+  }
+
+  Future<void> googleLogin({required String idToken}) async {
+    final result = await _repo.googleLogin(idToken: idToken);
+    state = AsyncValue.data(result.user);
+  }
+
+  Future<void> logout() async {
+    await _repo.logout();
+    state = const AsyncValue.data(null);
+  }
+}
+
+final authControllerProvider = StateNotifierProvider<AuthController, AsyncValue<User?>>(
+  (ref) => AuthController(ref.read(authRepositoryProvider)),
+);
+
 // repos with mock
-final authRepositoryProvider           = Provider<IAuthRepository>((ref)           => MockAuthRepository());
+// final authRepositoryProvider           = Provider<IAuthRepository>((ref)           => MockAuthRepository());
+final authRepositoryProvider = Provider<IAuthRepository>((ref) => ApiAuthRepository(
+  dio: ref.read(dioProvider),
+  tokenStorage: ref.read(tokenStorageProvider),
+));
 final transactionRepositoryProvider    = Provider<ITransactionRepository>((ref)    => MockTransactionRepository());
 final categoryRepositoryProvider       = Provider<ICategoryRepository>((ref)       => MockCategoryRepository());
 final budgetRepositoryProvider         = Provider<IBudgetRepository>((ref)         => MockBudgetRepository());

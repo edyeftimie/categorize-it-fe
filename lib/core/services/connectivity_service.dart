@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:categoriseit_fe/core/config/app_config.dart';
 import 'package:http/http.dart' as http;
 import '../constants/api_constants.dart';
 
@@ -18,7 +19,7 @@ class ConnectivityService {
   Future<void> _ping() async {
     try {
       final response = await http
-          .get(Uri.parse('${ApiConstants.baseUrl}/api/health'))
+          .get(Uri.parse('${appBaseUrl}/api/health'))
           .timeout(ApiConstants.pingTimeout);
       _update(response.statusCode == 200);
     } catch (_) {
