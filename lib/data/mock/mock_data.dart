@@ -49,23 +49,23 @@ class MockData {
   ];
 
   static final budgets = [
-    Budget(id: 'b1', userId: 'u1', categoryId: 'cat1', categoryName: 'Food & Dining', categoryIcon: 'restaurant', categoryColor: '#FF6B6B', monthlyLimit: 1500, spent: 1840, currency: 'RON', createdAt: DateTime(2024, 1, 1)),
-    Budget(id: 'b2', userId: 'u1', categoryId: 'cat2', categoryName: 'Transport', categoryIcon: 'directions_car', categoryColor: '#4ECDC4', monthlyLimit: 1500, spent: 780, currency: 'RON', createdAt: DateTime(2024, 1, 1)),
-    Budget(id: 'b3', userId: 'u1', categoryId: 'cat5', categoryName: 'Entertainment', categoryIcon: 'movie', categoryColor: '#A855F7', monthlyLimit: 1000, spent: 946, currency: 'RON', createdAt: DateTime(2024, 1, 1)),
+    Budget(id: 'b1', categoryId: 'cat1', categoryName: 'Food & Dining', categoryIcon: 'restaurant', categoryColor: '#FF6B6B', monthlyLimit: 1500, spent: 1840, currency: 'RON'),
+    Budget(id: 'b2', categoryId: 'cat2', categoryName: 'Transport', categoryIcon: 'directions_car', categoryColor: '#4ECDC4', monthlyLimit: 1500, spent: 780, currency: 'RON'),
+    Budget(id: 'b3', categoryId: 'cat5', categoryName: 'Entertainment', categoryIcon: 'movie', categoryColor: '#A855F7', monthlyLimit: 1000, spent: 946, currency: 'RON'),
   ];
 
   static final recommendations = [
-    Recommendation(id: 'r1', userId: 'u1', type: RecommendationType.overspend, title: 'Budget exceeded', description: 'Food & Dining is 23% over your 1,500 RON monthly limit.', categoryId: 'cat1', priority: 1, isRead: false, isDismissed: false, createdAt: DateTime.now().subtract(const Duration(hours: 4))),
-    Recommendation(id: 'r2', userId: 'u1', type: RecommendationType.trendUp, title: 'Subscription detected', description: 'Netflix charges 79.95 RON monthly. Track it?', categoryId: 'cat9', priority: 2, isRead: false, isDismissed: false, createdAt: DateTime.now().subtract(const Duration(days: 1))),
-    Recommendation(id: 'r3', userId: 'u1', type: RecommendationType.trendDown, title: 'Savings opportunity', description: 'Transport spending dropped 18% this month. Great job!', categoryId: 'cat2', priority: 3, isRead: false, isDismissed: false, createdAt: DateTime.now().subtract(const Duration(days: 3))),
-    Recommendation(id: 'r4', userId: 'u1', type: RecommendationType.trendUp, title: 'Spending trend', description: 'Entertainment up 45% vs last month.', categoryId: 'cat5', priority: 2, isRead: true, isDismissed: false, createdAt: DateTime.now().subtract(const Duration(days: 5))),
+    Recommendation(id: 'r1', type: RecommendationType.overspend, title: 'Budget exceeded', description: 'Food & Dining is 23% over your 1,500 RON monthly limit.', categoryId: 'cat1', priority: 1, isRead: false, isDismissed: false, createdAt: DateTime.now().subtract(const Duration(hours: 4))),
+    Recommendation(id: 'r2', type: RecommendationType.trendUp, title: 'Subscription detected', description: 'Netflix charges 79.95 RON monthly. Track it?', categoryId: 'cat9', priority: 2, isRead: false, isDismissed: false, createdAt: DateTime.now().subtract(const Duration(days: 1))),
+    Recommendation(id: 'r3', type: RecommendationType.trendDown, title: 'Savings opportunity', description: 'Transport spending dropped 18% this month. Great job!', categoryId: 'cat2', priority: 3, isRead: false, isDismissed: false, createdAt: DateTime.now().subtract(const Duration(days: 3))),
+    Recommendation(id: 'r4', type: RecommendationType.trendUp, title: 'Spending trend', description: 'Entertainment up 45% vs last month.', categoryId: 'cat5', priority: 2, isRead: true, isDismissed: false, createdAt: DateTime.now().subtract(const Duration(days: 5))),
   ];
 
   static final bankConnections = [
-    BankConnection(id: 'bc1', userId: 'u1', aspspName: 'Banca Transilvania', aspspCountry: 'RO', validUntil: DateTime(2026, 12, 31), status: 'Active', createdAt: DateTime(2026, 1, 1), bankAccounts: [
+    BankConnection(id: 'bc1', aspspName: 'Banca Transilvania', aspspCountry: 'RO', validUntil: DateTime(2026, 12, 31), status: 'Active', createdAt: DateTime(2026, 1, 1), bankAccounts: [
     BankAccount(id: 'ba1', bankConnectionId: 'bc1', uid: 'uid1', iban: 'RO49BTRL00001234524521', name: 'Current Account', currency: 'RON', lastSyncedAt: DateTime.now().subtract(const Duration(minutes: 2))),
     BankAccount(id: 'ba2', bankConnectionId: 'bc1', uid: 'uid2', iban: 'RO49BTRL00001234528832', name: 'Savings', currency: 'RON', lastSyncedAt: DateTime.now().subtract(const Duration(minutes: 2))),]),
-    BankConnection(id: 'bc2', userId: 'u1', aspspName: 'ING Bank', aspspCountry: 'RO', validUntil: DateTime(2025, 12, 31), status: 'Expired', createdAt: DateTime(2025, 1, 1), bankAccounts: []),
+    BankConnection(id: 'bc2', aspspName: 'ING Bank', aspspCountry: 'RO', validUntil: DateTime(2025, 12, 31), status: 'Expired', createdAt: DateTime(2025, 1, 1), bankAccounts: []),
   ];
 
   static final dashboard = DashboardData(
@@ -94,9 +94,37 @@ class MockData {
   ];
 
   static final monthlySeries = <String, List<MonthlyAmount>>{
-    'cat1': [MonthlyAmount('Dec', 620), MonthlyAmount('Jan', 780), MonthlyAmount('Feb', 550), MonthlyAmount('Mar', 890), MonthlyAmount('Apr', 582), MonthlyAmount('May', 1240)],
-    'cat2': [MonthlyAmount('Dec', 210), MonthlyAmount('Jan', 185), MonthlyAmount('Feb', 230), MonthlyAmount('Mar', 195), MonthlyAmount('Apr', 220), MonthlyAmount('May', 175)],
-    'cat5': [MonthlyAmount('Dec', 350), MonthlyAmount('Jan', 420), MonthlyAmount('Feb', 280), MonthlyAmount('Mar', 310), MonthlyAmount('Apr', 390), MonthlyAmount('May', 260)],
-    'cat4': [MonthlyAmount('Dec', 1200), MonthlyAmount('Jan', 640), MonthlyAmount('Feb', 480), MonthlyAmount('Mar', 720), MonthlyAmount('Apr', 560), MonthlyAmount('May', 830)]
+    'cat1': [
+      const MonthlyAmount(month: 12, year: 2023, total: 620), 
+      const MonthlyAmount(month: 1, year: 2024, total: 780), 
+      const MonthlyAmount(month: 2, year: 2024, total: 550), 
+      const MonthlyAmount(month: 3, year: 2024, total: 890), 
+      const MonthlyAmount(month: 4, year: 2024, total: 582), 
+      const MonthlyAmount(month: 5, year: 2024, total: 1240)
+    ],
+    'cat2': [
+      const MonthlyAmount(month: 12, year: 2023, total: 210), 
+      const MonthlyAmount(month: 1, year: 2024, total: 185), 
+      const MonthlyAmount(month: 2, year: 2024, total: 230), 
+      const MonthlyAmount(month: 3, year: 2024, total: 195), 
+      const MonthlyAmount(month: 4, year: 2024, total: 220), 
+      const MonthlyAmount(month: 5, year: 2024, total: 175)
+    ],
+    'cat5': [
+      const MonthlyAmount(month: 12, year: 2023, total: 350), 
+      const MonthlyAmount(month: 1, year: 2024, total: 420), 
+      const MonthlyAmount(month: 2, year: 2024, total: 280), 
+      const MonthlyAmount(month: 3, year: 2024, total: 310), 
+      const MonthlyAmount(month: 4, year: 2024, total: 390), 
+      const MonthlyAmount(month: 5, year: 2024, total: 260)
+    ],
+    'cat4': [
+      const MonthlyAmount(month: 12, year: 2023, total: 1200), 
+      const MonthlyAmount(month: 1, year: 2024, total: 640), 
+      const MonthlyAmount(month: 2, year: 2024, total: 480), 
+      const MonthlyAmount(month: 3, year: 2024, total: 720), 
+      const MonthlyAmount(month: 4, year: 2024, total: 560), 
+      const MonthlyAmount(month: 5, year: 2024, total: 830)
+    ]
   };
 }

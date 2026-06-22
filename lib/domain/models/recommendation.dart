@@ -13,41 +13,56 @@ RecommendationType recommendationTypeFromString(String s) {
 
 class Recommendation {
   final String id;
-  final String userId;
   final RecommendationType type;
   final String title;
   final String description;
   final String? categoryId;
+  final String? categoryName;
+  final String? categoryColor;
   final int priority;
   final bool isRead;
   final bool isDismissed;
   final DateTime createdAt;
 
   const Recommendation({
-    required this.id, required this.userId, required this.type,
-    required this.title, required this.description, this.categoryId,
-    required this.priority, required this.isRead, required this.isDismissed,
+    required this.id,
+    required this.type,
+    required this.title,
+    required this.description,
+    this.categoryId,
+    this.categoryName,
+    this.categoryColor,
+    required this.priority,
+    required this.isRead,
+    required this.isDismissed,
     required this.createdAt,
   });
 
-  bool get isHigh   => priority == 1;
+  // Backend convention: 3 = High, 2 = Medium, 1 = Low
+  bool get isHigh   => priority == 3;
   bool get isMedium => priority == 2;
-  bool get isLow    => priority == 3;
+  bool get isLow    => priority == 1;
 
   Recommendation copyWith({bool? isRead, bool? isDismissed}) => Recommendation(
-    id: id, userId: userId, type: type, title: title, description: description,
-    categoryId: categoryId, priority: priority,
+    id: id, type: type, title: title, description: description,
+    categoryId: categoryId, categoryName: categoryName, categoryColor: categoryColor,
+    priority: priority,
     isRead: isRead ?? this.isRead,
     isDismissed: isDismissed ?? this.isDismissed,
     createdAt: createdAt,
   );
 
   factory Recommendation.fromJson(Map<String, dynamic> j) => Recommendation(
-    id: j['id'], userId: j['userId'],
-    type: recommendationTypeFromString(j['type']),
-    title: j['title'], description: j['description'],
-    categoryId: j['categoryId'], priority: j['priority'],
-    isRead: j['isRead'], isDismissed: j['isDismissed'],
-    createdAt: DateTime.parse(j['createdAt']),
+    id: j['id'] as String,
+    type: recommendationTypeFromString(j['type'] as String),
+    title: j['title'] as String,
+    description: j['description'] as String,
+    categoryId: j['categoryId'] as String?,
+    categoryName: j['categoryName'] as String?,
+    categoryColor: j['categoryColor'] as String?,
+    priority: j['priority'] as int,
+    isRead: j['isRead'] as bool,
+    isDismissed: j['isDismissed'] as bool,
+    createdAt: DateTime.parse(j['createdAt'] as String),
   );
 }

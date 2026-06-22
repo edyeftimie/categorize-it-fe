@@ -13,8 +13,12 @@ class MockDashboardRepository implements IDashboardRepository {
   Future<List<MonthlyAmount>> getMonthlySeries(String categoryId) async {
     await Future.delayed(const Duration(milliseconds: 300));
     return MockData.monthlySeries[categoryId] ?? [
-      MonthlyAmount('Dec', 0), MonthlyAmount('Jan', 0), MonthlyAmount('Feb', 0),
-      MonthlyAmount('Mar', 0), MonthlyAmount('Apr', 0), MonthlyAmount('May', 0),
+      const MonthlyAmount(month: 12, year: 2023, total: 0),
+      const MonthlyAmount(month: 1, year: 2024, total: 0),
+      const MonthlyAmount(month: 2, year: 2024, total: 0),
+      const MonthlyAmount(month: 3, year: 2024, total: 0),
+      const MonthlyAmount(month: 4, year: 2024, total: 0),
+      const MonthlyAmount(month: 5, year: 2024, total: 0),
     ];
   }
 }

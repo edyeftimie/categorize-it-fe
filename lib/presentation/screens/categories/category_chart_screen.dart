@@ -7,6 +7,12 @@ import '../../../core/utils/format_utils.dart';
 import '../../../data/providers.dart';
 import '../../../domain/models/dashboard.dart';
 
+String _monthLabel(MonthlyAmount m) {
+  const names = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return names[m.month];
+}
+
 class CategoryChartScreen extends ConsumerStatefulWidget {
   final String? categoryId;
   const CategoryChartScreen({super.key, this.categoryId});
@@ -121,12 +127,12 @@ class _SummaryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final current  = series.last.amount;
-    final previous = series[series.length - 2].amount;
+    final current  = series.last.total;
+    final previous = series[series.length - 2].total;
     final diff     = current - previous;
     final pct      = previous > 0 ? (diff.abs() / previous * 100).toStringAsFixed(1) : '—';
     final isUp     = diff > 0;
-    final avg      = series.fold(0.0, (s, m) => s + m.amount) / series.length;
+    final avg      = series.fold(0.0, (s, m) => s + m.total) / series.length;
 
     return Row(
       children: [
@@ -235,7 +241,7 @@ class _ChartCard extends StatelessWidget {
       getTitlesWidget: (v, _) {
         final i = v.toInt();
         if (i < 0 || i >= series.length) return const SizedBox.shrink();
-        return Text(series[i].month, style: const TextStyle(color: Color(0xFF6B7280), fontSize: 11));
+        return Text(_monthLabel(series[i]), style: const TextStyle(color: Color(0xFF6B7280), fontSize: 11));
       },
     ),
   );
@@ -271,7 +277,7 @@ class _ChartCard extends StatelessWidget {
       ),
       barGroups: series.asMap().entries.map((e) => BarChartGroupData(
         x: e.key,
-        barRods: [BarChartRodData(toY: e.value.amount, color: AppColors.emerald, width: 18, borderRadius: const BorderRadius.vertical(top: Radius.circular(4)))],
+        barRods: [BarChartRodData(toY: e.value.total, color: AppColors.emerald, width: 18, borderRadius: const BorderRadius.vertical(top: Radius.circular(4)))],
       )).toList(),
     ),
     swapAnimationDuration: const Duration(milliseconds: 250),
@@ -300,7 +306,7 @@ class _ChartCard extends StatelessWidget {
       ),
       lineBarsData: [
         LineChartBarData(
-          spots: series.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value.amount)).toList(),
+          spots: series.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value.total)).toList(),
           isCurved: true,
           color: AppColors.emerald,
           barWidth: 2,
@@ -325,7 +331,7 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final amounts = series.map((s) => s.amount).toList();
+    final amounts = series.map((s) => s.total).toList();
     final peak = amounts.reduce((a, b) => a > b ? a : b);
     final low  = amounts.reduce((a, b) => a < b ? a : b);
     final avg  = amounts.fold(0.0, (s, a) => s + a) / amounts.length;

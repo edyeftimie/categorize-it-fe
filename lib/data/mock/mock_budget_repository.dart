@@ -16,9 +16,9 @@ class MockBudgetRepository implements IBudgetRepository {
     await Future.delayed(const Duration(milliseconds: 300));
     final cat = MockData.categories.firstWhere((c) => c.id == categoryId);
     final b = Budget(
-      id: 'b_${DateTime.now().millisecondsSinceEpoch}', userId: 'u1',
+      id: 'b_${DateTime.now().millisecondsSinceEpoch}',
       categoryId: cat.id, categoryName: cat.name, categoryIcon: cat.icon, categoryColor: cat.color,
-      monthlyLimit: monthlyLimit, spent: 0, currency: currency, createdAt: DateTime.now(),
+      monthlyLimit: monthlyLimit, spent: 0, currency: currency,
     );
     _budgets.add(b);
     return b;

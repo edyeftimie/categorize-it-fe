@@ -3,8 +3,13 @@ import '../models/user.dart';
 class AuthResult {
   final String token;
   final User user;
-  final DateTime expiration;
-  const AuthResult({required this.token, required this.user, required this.expiration});
+
+  const AuthResult({required this.token, required this.user});
+
+  factory AuthResult.fromJson(Map<String, dynamic> j) => AuthResult(
+    token: j['token'] as String,
+    user: User.fromJson(j),
+  );
 }
 
 abstract interface class IAuthRepository {
