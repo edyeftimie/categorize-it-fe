@@ -1,4 +1,5 @@
 import 'package:categoriseit_fe/core/services/google_sign_in_service.dart';
+import 'package:categoriseit_fe/data/repositories/api/category_repository.dart';
 import 'package:categoriseit_fe/domain/models/user.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/models/budget.dart';
@@ -90,14 +91,17 @@ final authControllerProvider = StateNotifierProvider<AuthController, AsyncValue<
   (ref) => AuthController(ref.read(authRepositoryProvider)),
 );
 
-// repos with mock
-// final authRepositoryProvider           = Provider<IAuthRepository>((ref)           => MockAuthRepository());
+// repos with api
 final authRepositoryProvider = Provider<IAuthRepository>((ref) => ApiAuthRepository(
   dio: ref.read(dioProvider),
   tokenStorage: ref.read(tokenStorageProvider),
 ));
+final categoryRepositoryProvider = Provider<ICategoryRepository>((ref) => CategoryRepository(dio: ref.read(dioProvider)));
+
+// repos with mock
+// final authRepositoryProvider           = Provider<IAuthRepository>((ref)           => MockAuthRepository());
 final transactionRepositoryProvider    = Provider<ITransactionRepository>((ref)    => MockTransactionRepository());
-final categoryRepositoryProvider       = Provider<ICategoryRepository>((ref)       => MockCategoryRepository());
+// final categoryRepositoryProvider       = Provider<ICategoryRepository>((ref)       => MockCategoryRepository());
 final budgetRepositoryProvider         = Provider<IBudgetRepository>((ref)         => MockBudgetRepository());
 final recommendationRepositoryProvider = Provider<IRecommendationRepository>((ref) => MockRecommendationRepository());
 final bankConnectionRepositoryProvider = Provider<IBankConnectionRepository>((ref) => MockBankConnectionRepository());
