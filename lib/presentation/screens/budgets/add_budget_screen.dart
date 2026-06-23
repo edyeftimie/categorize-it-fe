@@ -58,7 +58,7 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
                 ],
               ),
               const SizedBox(height: 32),
-              Text('Category', style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
+              const Text('Category', style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
               const SizedBox(height: 8),
               categoriesAsync.when(
                 loading: () => const LinearProgressIndicator(color: AppColors.emerald),
@@ -70,7 +70,7 @@ class _AddBudgetScreenState extends ConsumerState<AddBudgetScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              Text('Monthly Limit', style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
+              const Text('Monthly Limit', style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
               const SizedBox(height: 8),
               _AmountField(controller: _amountController, currency: _currency, onCurrencyChanged: (c) => setState(() => _currency = c)),
               const Spacer(),
@@ -117,15 +117,15 @@ class _CategoryPicker extends StatelessWidget {
             if (selected != null) ...[
               Container(
                 padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(color: CategoryUtils.colorFromHex(selected!.color).withOpacity(0.15), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: CategoryUtils.colorFromHex(selected!.color).withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8)),
                 child: Icon(CategoryUtils.iconFromName(selected!.icon), color: CategoryUtils.colorFromHex(selected!.color), size: 18),
               ),
               const SizedBox(width: 10),
               Text(selected!.name, style: const TextStyle(color: Colors.white)),
             ] else
-              Text('Select a category', style: TextStyle(color: AppColors.textMuted)),
+              const Text('Select a category', style: TextStyle(color: AppColors.textMuted)),
             const Spacer(),
-            Icon(Icons.keyboard_arrow_down, color: AppColors.textMuted),
+            const Icon(Icons.keyboard_arrow_down, color: AppColors.textMuted),
           ],
         ),
       ),
@@ -144,7 +144,7 @@ class _CategoryPicker extends StatelessWidget {
           return ListTile(
             leading: Container(
               padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(8)),
+              decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8)),
               child: Icon(CategoryUtils.iconFromName(cat.icon), color: color, size: 18),
             ),
             title: Text(cat.name, style: const TextStyle(color: Colors.white)),
@@ -177,7 +177,7 @@ class _AmountField extends StatelessWidget {
               child: Row(children: [
                 Text(currency, style: const TextStyle(color: Colors.white)),
                 const SizedBox(width: 4),
-                Icon(Icons.keyboard_arrow_down, color: AppColors.textMuted, size: 16),
+                const Icon(Icons.keyboard_arrow_down, color: AppColors.textMuted, size: 16),
               ]),
             ),
           ),

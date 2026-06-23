@@ -24,7 +24,7 @@ class InsightsScreen extends ConsumerWidget {
                 children: [
                   const Text('Insights', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w500)),
                   const SizedBox(height: 4),
-                  Text('$unread new recommendation${unread == 1 ? '' : 's'}', style: TextStyle(color: AppColors.textMuted, fontSize: 14)),
+                  Text('$unread new recommendation${unread == 1 ? '' : 's'}', style: const TextStyle(color: AppColors.textMuted, fontSize: 14)),
                 ],
               ),
             ),
@@ -46,7 +46,7 @@ class InsightsScreen extends ConsumerWidget {
                       background: Container(
                         alignment: Alignment.centerRight,
                         padding: const EdgeInsets.only(right: 20),
-                        decoration: BoxDecoration(color: AppColors.red.withOpacity(0.2), borderRadius: BorderRadius.circular(16)),
+                        decoration: BoxDecoration(color: AppColors.red.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(16)),
                         child: const Icon(Icons.delete_outline, color: AppColors.red),
                       ),
                       child: _RecCard(rec: rec, onRead: () => ref.read(recommendationsProvider.notifier).markAsRead(rec.id)),
@@ -104,10 +104,10 @@ class _RecCard extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: color.withOpacity(rec.isRead ? 0.08 : 0.15),
+                                color: color.withValues(alpha: rec.isRead ? 0.08 : 0.15),
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: Icon(icon, color: color.withOpacity(rec.isRead ? 0.5 : 1.0), size: 18),
+                              child: Icon(icon, color: color.withValues(alpha: rec.isRead ? 0.5 : 1.0), size: 18),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -126,7 +126,7 @@ class _RecCard extends StatelessWidget {
                                           ),
                                         ),
                                       ),
-                                      Text(_timeAgo(rec.createdAt), style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
+                                      Text(_timeAgo(rec.createdAt), style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
                                     ],
                                   ),
                                   const SizedBox(height: 4),
@@ -139,7 +139,7 @@ class _RecCard extends StatelessWidget {
                                   ),
                                   if (!rec.isRead) ...[
                                     const SizedBox(height: 8),
-                                    Text('Swipe to dismiss', style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
+                                    const Text('Swipe to dismiss', style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
                                   ],
                                 ],
                               ),

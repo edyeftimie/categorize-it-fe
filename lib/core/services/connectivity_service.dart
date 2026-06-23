@@ -19,7 +19,7 @@ class ConnectivityService {
   Future<void> _ping() async {
     try {
       final response = await http
-          .get(Uri.parse('${appBaseUrl}/api/health'))
+          .get(Uri.parse('$appBaseUrl/api/health'))
           .timeout(ApiConstants.pingTimeout);
       _update(response.statusCode == 200);
     } catch (_) {

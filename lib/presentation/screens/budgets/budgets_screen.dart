@@ -47,7 +47,7 @@ class _Body extends StatelessWidget {
               children: [
                 const Text('Budgets', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 2),
-                Text(formatMonthYear(DateTime.now()), style: TextStyle(color: AppColors.textMuted, fontSize: 14)),
+                Text(formatMonthYear(DateTime.now()), style: const TextStyle(color: AppColors.textMuted, fontSize: 14)),
               ],
             ),
             GestureDetector(
@@ -88,12 +88,12 @@ class _OverviewCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('Total budgeted', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                const Text('Total budgeted', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                 const SizedBox(height: 4),
                 Text(formatRon(totalLimit), style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w500)),
               ]),
               Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                Text('Spent so far', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                const Text('Spent so far', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                 const SizedBox(height: 4),
                 Text(formatRon(totalSpent), style: const TextStyle(color: AppColors.orange, fontSize: 22, fontWeight: FontWeight.w500)),
               ]),
@@ -114,7 +114,7 @@ class _OverviewCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Text('${formatRon(remaining)} remaining', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+          Text('${formatRon(remaining)} remaining', style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
         ],
       ),
     );
@@ -144,7 +144,7 @@ class _BudgetCard extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
                 child: Icon(icon, color: color, size: 20),
               ),
               const SizedBox(width: 12),
@@ -170,8 +170,8 @@ class _BudgetCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${formatRon(budget.spent)} spent', style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
-              Text('${formatRon(budget.monthlyLimit)} limit', style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
+              Text('${formatRon(budget.spent)} spent', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
+              Text('${formatRon(budget.monthlyLimit)} limit', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
             ],
           ),
         ],

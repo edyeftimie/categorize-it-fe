@@ -35,7 +35,7 @@ class _Body extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
         children: [
           const SizedBox(height: 8),
-          Text('Good morning,', style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
+          const Text('Good morning,', style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
           const SizedBox(height: 4),
           const Text('Eduard 👋', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w500)),
           const SizedBox(height: 16),
@@ -77,7 +77,7 @@ class _BalanceCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Total balance', style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 14)),
+          Text('Total balance', style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 14)),
           const SizedBox(height: 4),
           Text(formatRon(data.totalBalance), style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w500)),
           const SizedBox(height: 12),
@@ -101,11 +101,11 @@ class _MiniStat extends StatelessWidget {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(12)),
+        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(12)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 12)),
+            Text(label, style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 12)),
             const SizedBox(height: 2),
             Text(value, style: const TextStyle(color: Colors.white, fontSize: 15)),
           ],
@@ -133,7 +133,7 @@ class _CategoryCard extends StatelessWidget {
             Row(children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
                 child: Icon(icon, color: color, size: 20),
               ),
               const SizedBox(width: 12),

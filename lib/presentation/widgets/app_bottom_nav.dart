@@ -89,7 +89,7 @@ class _InsightsButton extends StatelessWidget {
                     end: Alignment.bottomRight,
                   ),
                   shape: BoxShape.circle,
-                  boxShadow: [BoxShadow(color: AppColors.emerald.withOpacity(0.4), blurRadius: 12, spreadRadius: 2)],
+                  boxShadow: [BoxShadow(color: AppColors.emerald.withValues(alpha: 0.4), blurRadius: 12, spreadRadius: 2)],
                 ),
                 child: const Icon(Icons.lightbulb_outline, color: Colors.white, size: 24),
               ),

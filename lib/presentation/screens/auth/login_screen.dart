@@ -92,7 +92,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w600)),
               ),
               const SizedBox(height: 8),
-              Center(
+              const Center(
                 child: Text('Sign in to your account',
                     style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
               ),
@@ -105,7 +105,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.redBg,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.red.withOpacity(0.4)),
+                    border: Border.all(color: AppColors.red.withValues(alpha: 0.4)),
                   ),
                   child: Text(_error!, style: const TextStyle(color: AppColors.red, fontSize: 13)),
                 ),
@@ -113,7 +113,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ],
 
               // Email
-              AuthLabel('Email'),
+              const AuthLabel('Email'),
               const SizedBox(height: 6),
               AuthTextField(
                 controller: _emailCtrl,
@@ -123,7 +123,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 16),
 
               // Password
-              AuthLabel('Password'),
+              const AuthLabel('Password'),
               const SizedBox(height: 6),
               AuthTextField(
                 controller: _passCtrl,
@@ -146,10 +146,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 16),
 
               // OR divider
-              Row(children: [
+              const Row(children: [
                 Expanded(child: Divider(color: AppColors.border)),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: EdgeInsets.symmetric(horizontal: 12),
                   child: Text('or', style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
                 ),
                 Expanded(child: Divider(color: AppColors.border)),
@@ -162,7 +162,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
               // Register link
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text("Don't have an account? ",
+                const Text("Don't have an account? ",
                     style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
                 GestureDetector(
                   onTap: () => context.push('/register'),

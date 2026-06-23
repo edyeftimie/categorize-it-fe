@@ -206,7 +206,7 @@ class _TotalBanner extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Total spent this month', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                const Text('Total spent this month', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                 const SizedBox(height: 4),
                 Text(formatRon(total), style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w500)),
                 if (pct != null) ...[
@@ -269,16 +269,16 @@ class _TxnBox extends StatelessWidget {
                 children: [
                   Text(title,    style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
                   const SizedBox(height: 2),
-                  Text(subtitle, style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                  Text(subtitle, style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
                 ],
               ),
               if (showTotal)
-                Text(formatRon(total), style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
+                Text(formatRon(total), style: const TextStyle(color: AppColors.textSecondary, fontSize: 14)),
             ],
           ),
           if (transactions.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
               child: Center(child: Text('No transactions', style: TextStyle(color: AppColors.textMuted, fontSize: 13))),
             )
           else ...[
@@ -325,7 +325,7 @@ class _TxnRow extends StatelessWidget {
       children: [
         Container(
           padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(10)),
+          decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
           child: Icon(icon, color: color, size: 18),
         ),
         const SizedBox(width: 10),
@@ -334,7 +334,7 @@ class _TxnRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(txn.merchantName ?? 'Transaction', style: const TextStyle(color: Colors.white, fontSize: 13)),
-              Text(formatShortDate(txn.bookingDate),  style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
+              Text(formatShortDate(txn.bookingDate),  style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
             ],
           ),
         ),

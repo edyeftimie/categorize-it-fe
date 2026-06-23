@@ -1,10 +1,9 @@
 import 'package:categoriseit_fe/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class AuthLabel extends StatelessWidget {
   final String text;
-  const AuthLabel(this.text);
+  const AuthLabel(this.text, {super.key});
   @override
   Widget build(BuildContext context) =>
       Text(text, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500));
@@ -17,7 +16,7 @@ class AuthTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final Widget? suffix;
 
-  const AuthTextField({
+  const AuthTextField({super.key, 
     required this.controller,
     required this.hint,
     this.obscure = false,
@@ -34,18 +33,18 @@ class AuthTextField extends StatelessWidget {
       style: const TextStyle(color: Colors.white, fontSize: 15),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: AppColors.textMuted, fontSize: 15),
+        hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 15),
         suffixIcon: suffix,
         filled: true,
         fillColor: AppColors.surface,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
+          borderSide: const BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
+          borderSide: const BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -61,7 +60,7 @@ class AuthPrimaryButton extends StatelessWidget {
   final bool loading;
   final VoidCallback onTap;
 
-  const AuthPrimaryButton({required this.label, required this.loading, required this.onTap});
+  const AuthPrimaryButton({super.key, required this.label, required this.loading, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +87,7 @@ class AuthGoogleButton extends StatelessWidget {
   final bool loading;
   final VoidCallback onTap;
 
-  const AuthGoogleButton({required this.loading, required this.onTap});
+  const AuthGoogleButton({super.key, required this.loading, required this.onTap});
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -96,7 +95,7 @@ class AuthGoogleButton extends StatelessWidget {
       child: OutlinedButton(
         onPressed: loading ? null : onTap,
         style: OutlinedButton.styleFrom(
-          side: BorderSide(color: AppColors.border),
+          side: const BorderSide(color: AppColors.border),
           backgroundColor: AppColors.surface,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),

@@ -34,10 +34,10 @@ class AllCategoriesScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  Text('Total spending this month', style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
+                  const Text('Total spending this month', style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
                   const SizedBox(height: 4),
                   Text(formatRon(total), style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w500)),
-                  Text('Across ${cats.where((c) => c.amount > 0).length} categories', style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
+                  Text('Across ${cats.where((c) => c.amount > 0).length} categories', style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
                 ],
               ),
             ),
@@ -60,7 +60,7 @@ class AllCategoriesScreen extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(12)), child: Icon(icon, color: color, size: 20)),
+                              Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)), child: Icon(icon, color: color, size: 20)),
                               const SizedBox(width: 12),
                               Expanded(child: Text(c.categoryName, style: const TextStyle(color: Colors.white, fontSize: 14))),
                               Text(formatRon(c.amount), style: const TextStyle(color: Colors.white, fontSize: 14)),

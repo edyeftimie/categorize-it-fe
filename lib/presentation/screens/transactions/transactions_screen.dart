@@ -40,11 +40,11 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                     controller: _searchController,
                     onChanged: (v) => setState(() => _query = v.toLowerCase()),
                     style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Search transactions...',
                       hintStyle: TextStyle(color: AppColors.textMuted),
-                      prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      prefixIcon: Icon(Icons.search, color: AppColors.textMuted),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     ),
                   ),
                 ],
@@ -98,7 +98,7 @@ class _DateGroup extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 16),
-        Text(label.toUpperCase(), style: TextStyle(color: AppColors.textMuted, fontSize: 11, letterSpacing: 1.2)),
+        Text(label.toUpperCase(), style: const TextStyle(color: AppColors.textMuted, fontSize: 11, letterSpacing: 1.2)),
         const SizedBox(height: 8),
         ...transactions.map((t) => Padding(
           padding: const EdgeInsets.only(bottom: 8),
@@ -124,7 +124,7 @@ class _TxnCard extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
+            decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
             child: Icon(icon, color: color, size: 24),
           ),
           const SizedBox(width: 12),
@@ -134,7 +134,7 @@ class _TxnCard extends StatelessWidget {
               children: [
                 Text(txn.merchantName ?? 'Transaction', style: const TextStyle(color: Colors.white, fontSize: 14)),
                 const SizedBox(height: 2),
-                Text(txn.categoryName ?? '', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                Text(txn.categoryName ?? '', style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
               ],
             ),
           ),
