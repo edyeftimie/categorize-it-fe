@@ -59,7 +59,6 @@ class ApiAuthRepository implements IAuthRepository {
     try {
       final response = await _dio.post<Map<String, dynamic>>(path, data: body);
       final result = AuthResult.fromJson(response.data!);
-      print('>>>>> JWT: ${result.token}');   // temporary
       await Future.wait([
         _tokenStorage.saveToken(result.token),
         _tokenStorage.saveUserData({
