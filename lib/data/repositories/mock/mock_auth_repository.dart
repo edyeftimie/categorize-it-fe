@@ -7,7 +7,7 @@ class MockAuthRepository implements IAuthRepository {
   @override
   Future<AuthResult> login({required String email, required String password}) async {
     await Future.delayed(const Duration(milliseconds: 500));
-    return AuthResult(token: 'mock_jwt_token', user: _mockUser);
+    return const AuthResult(token: 'mock_jwt_token', user: _mockUser);
   }
 
   @override
@@ -19,7 +19,7 @@ class MockAuthRepository implements IAuthRepository {
   @override
   Future<AuthResult> googleLogin({required String idToken}) async {
     await Future.delayed(const Duration(milliseconds: 500));
-    return AuthResult(token: 'mock_jwt_token', user: _mockUser);
+    return const AuthResult(token: 'mock_jwt_token', user: _mockUser);
   }
 
   @override

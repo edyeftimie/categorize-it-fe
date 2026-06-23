@@ -2,11 +2,15 @@ import '../models/transaction.dart';
 
 abstract interface class ITransactionRepository {
   Future<List<Transaction>> getTransactions({
-    DateTime? dateFrom,
-    DateTime? dateTo,
+    String? search,
     String? categoryId,
-    String? bankAccountId,
+    int? month,
+    int? year,
+    bool? isExpense,
+    int page = 1,
+    int pageSize = 100,
   });
+
   Future<Transaction> createTransaction({
     required double amount,
     required String currency,
@@ -16,6 +20,8 @@ abstract interface class ITransactionRepository {
     String? description,
     String? categoryId,
   });
+
   Future<Transaction> recategorise(String transactionId, String categoryId);
+
   Future<void> sync();
 }

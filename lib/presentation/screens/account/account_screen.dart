@@ -24,11 +24,11 @@ class _State extends ConsumerState<AccountScreen> {
       builder: (dialogContext) => AlertDialog(   // ← name it dialogContext
         backgroundColor: AppColors.surface,
         title: const Text('Log out', style: TextStyle(color: Colors.white)),
-        content: Text('Are you sure?', style: TextStyle(color: AppColors.textSecondary)),
+        content: const Text('Are you sure?', style: TextStyle(color: AppColors.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),  // ← dialogContext
-            child: Text('Cancel', style: TextStyle(color: AppColors.textMuted)),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.textMuted)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),   // ← dialogContext
@@ -61,7 +61,7 @@ class _State extends ConsumerState<AccountScreen> {
               data: (user) => _ProfileCard(user: user),     // ← pass user
             ),
             const SizedBox(height: 24),
-            Text('CONNECTED BANKS', style: TextStyle(color: AppColors.textMuted, fontSize: 11, letterSpacing: 1.2)),
+            const Text('CONNECTED BANKS', style: TextStyle(color: AppColors.textMuted, fontSize: 11, letterSpacing: 1.2)),
             const SizedBox(height: 10),
             connectionsAsync.when(
               loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
@@ -77,7 +77,7 @@ class _State extends ConsumerState<AccountScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            Text('ACCOUNT', style: TextStyle(color: AppColors.textMuted, fontSize: 11, letterSpacing: 1.2)),
+            const Text('ACCOUNT', style: TextStyle(color: AppColors.textMuted, fontSize: 11, letterSpacing: 1.2)),
             const SizedBox(height: 10),
             _OutlineButton(label: 'Log out', onTap: () => _confirmLogout(context)),
           ],
@@ -115,12 +115,12 @@ class _ProfileCard extends StatelessWidget {
                 children: [
                   Text(name,  style: const TextStyle(color: Colors.white, fontSize: 16)),
                   const SizedBox(height: 4),
-                  Text(email, style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                  Text(email, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                 ],
               ),
             ],
           ),
-          Positioned(
+          const Positioned(
             top: 0, right: 0,
             child: Icon(Icons.edit_outlined, color: AppColors.textSecondary, size: 18),
           ),
@@ -176,7 +176,7 @@ class _ConnectionCard extends StatelessWidget {
                           isActive
                             ? '${connection.bankAccounts.length} accounts • Expires ${connection.validUntil.month}/${connection.validUntil.year}'
                             : 'Reconnect to sync transactions',
-                          style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+                          style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
                         ),
                       ],
                     ),
@@ -231,7 +231,7 @@ class _ExpandedContent extends StatelessWidget {
                 children: [
                   Text(a.name ?? 'Account', style: const TextStyle(color: Colors.white, fontSize: 13)),
                   const SizedBox(height: 2),
-                  Text(a.maskedIban, style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                  Text(a.maskedIban, style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
                 ],
               ),
             ),
@@ -241,9 +241,9 @@ class _ExpandedContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(children: [
-                Icon(Icons.refresh, size: 14, color: AppColors.textMuted),
+                const Icon(Icons.refresh, size: 14, color: AppColors.textMuted),
                 const SizedBox(width: 6),
-                Text(lastSync != null ? 'Last synced: ${_ago(lastSync)}' : 'Never synced', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                Text(lastSync != null ? 'Last synced: ${_ago(lastSync)}' : 'Never synced', style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
               ]),
               const Text('Disconnect', style: TextStyle(color: AppColors.red, fontSize: 12)),
             ],

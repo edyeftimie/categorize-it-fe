@@ -92,25 +92,25 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.redBg,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.red.withOpacity(0.4)),
+                    border: Border.all(color: AppColors.red.withValues(alpha: 0.4)),
                   ),
                   child: Text(_error!, style: const TextStyle(color: AppColors.red, fontSize: 13)),
                 ),
                 const SizedBox(height: 16),
               ],
 
-              AuthLabel('Name'),
+              const AuthLabel('Name'),
               const SizedBox(height: 6),
               AuthTextField(controller: _nameCtrl, hint: 'Your name'),
               const SizedBox(height: 16),
 
-              AuthLabel('Email'),
+              const AuthLabel('Email'),
               const SizedBox(height: 6),
               AuthTextField(controller: _emailCtrl, hint: 'you@example.com',
                   keyboardType: TextInputType.emailAddress),
               const SizedBox(height: 16),
 
-              AuthLabel('Password'),
+              const AuthLabel('Password'),
               const SizedBox(height: 6),
               AuthTextField(
                 controller: _passCtrl,
@@ -124,7 +124,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ),
               const SizedBox(height: 16),
 
-              AuthLabel('Confirm password'),
+              const AuthLabel('Confirm password'),
               const SizedBox(height: 6),
               AuthTextField(controller: _pass2Ctrl, hint: '••••••••', obscure: _obscure),
               const SizedBox(height: 28),
@@ -133,7 +133,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               const SizedBox(height: 24),
 
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text('Already have an account? ',
+                const Text('Already have an account? ',
                     style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
                 GestureDetector(
                   onTap: () => context.pop(),

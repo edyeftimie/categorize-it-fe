@@ -41,9 +41,9 @@ class NeedWantSplit {
   double get savingsPct => total > 0 ? savings / total : 0;
 
   factory NeedWantSplit.fromJson(Map<String, dynamic> j) => NeedWantSplit(
-    need:    (j['need']    as num).toDouble(),
-    want:    (j['want']    as num).toDouble(),
-    savings: (j['savings'] as num).toDouble(),
+    need:    (j['needAmount']    as num).toDouble(),
+    want:    (j['wantAmount']    as num).toDouble(),
+    savings: (j['savingsAmount'] as num).toDouble(),
   );
 }
 
@@ -77,8 +77,6 @@ class DashboardData {
   );
 }
 
-// Replaces the old {month: String, amount: double} shape.
-// API: GET /api/dashboard/monthly-series/{categoryId} → [{ month, year, total }]
 class MonthlyAmount {
   final int month;
   final int year;

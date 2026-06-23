@@ -58,7 +58,7 @@ class _ErrorInterceptor extends Interceptor {
       await _tokenStorage.deleteToken();
       return handler.reject(_wrap(
         err,
-        ApiException(
+        const ApiException(
           statusCode: 401,
           message: 'Session expired. Please log in again.',
           isUnauthorized: true,

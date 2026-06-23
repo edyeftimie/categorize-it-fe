@@ -6,15 +6,43 @@ class MockTransactionRepository implements ITransactionRepository {
   final _transactions = List<Transaction>.from(MockData.transactions);
 
   @override
-  Future<List<Transaction>> getTransactions({DateTime? dateFrom, DateTime? dateTo, String? categoryId, String? bankAccountId}) async {
+  // Future<List<Transaction>> getTransactions({DateTime? dateFrom, DateTime? dateTo, String? categoryId, String? bankAccountId}) async {
+  Future<List<Transaction>> getTransactions({
+    String? search,
+    String? categoryId,
+    int? month,
+    int? year,
+    bool? isExpense,
+    int page = 1,
+    int pageSize = 100,
+  }) async {
     await Future.delayed(const Duration(milliseconds: 300));
-    return _transactions.where((t) {
+
+    var filtered = _transactions.where((t) {
       if (categoryId != null && t.categoryId != categoryId) return false;
-      if (dateFrom != null && t.bookingDate.isBefore(dateFrom)) return false;
-      if (dateTo   != null && t.bookingDate.isAfter(dateTo))   return false;
+      if (month != null && t.bookingDate.month != month) return false;
+      if (year != null && t.bookingDate.year != year) return false;
+      if (isExpense != null && t.isExpense != isExpense) return false;
+
+      if (search != null && search.trim().isNotEmpty) {
+        final query = search.toLowerCase();
+        final matchMerchant = t.merchantName?.toLowerCase().contains(query) ?? false;
+        final matchDesc = t.description?.toLowerCase().contains(query) ?? false;
+        
+        if (!matchMerchant && !matchDesc) return false;
+      }
+
       return true;
-    }).toList()
-      ..sort((a, b) => b.bookingDate.compareTo(a.bookingDate));
+    }).toList();
+
+    filtered.sort((a, b) => b.bookingDate.compareTo(a.bookingDate));
+
+    final startIndex = (page - 1) * pageSize;
+    if (startIndex >= filtered.length) {
+      return []; 
+    }
+
+    return filtered.skip(startIndex).take(pageSize).toList();
   }
 
   @override
@@ -22,7 +50,7 @@ class MockTransactionRepository implements ITransactionRepository {
     await Future.delayed(const Duration(milliseconds: 300));
     final cat = categoryId != null ? MockData.categories.firstWhere((c) => c.id == categoryId, orElse: () => MockData.categories.last) : MockData.categories.last;
     final t = Transaction(
-      id: 'manual_${DateTime.now().millisecondsSinceEpoch}', userId: 'u1',
+      id: 'manual_${DateTime.now().millisecondsSinceEpoch}',
       amount: amount, currency: currency, isExpense: isExpense, bookingDate: bookingDate,
       merchantName: merchantName, description: description, categoryId: cat.id,
       categoryName: cat.name, categoryIcon: cat.icon, categoryColor: cat.color,

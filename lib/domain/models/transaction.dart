@@ -2,7 +2,6 @@ enum NeedWantSavings { need, want, savings, uncategorised, excluded }
 
 class Transaction {
   final String id;
-  final String userId;
   final String? bankAccountId;
   final String? entryReference;
   final double amount;
@@ -23,7 +22,6 @@ class Transaction {
 
   const Transaction({
     required this.id,
-    required this.userId,
     this.bankAccountId,
     this.entryReference,
     required this.amount,
@@ -43,9 +41,15 @@ class Transaction {
     required this.createdAt,
   });
 
-  Transaction copyWith({String? categoryId, String? categoryName, String? categoryIcon, String? categoryColor, NeedWantSavings? classification}) {
+  Transaction copyWith({
+    String? categoryId,
+    String? categoryName,
+    String? categoryIcon,
+    String? categoryColor,
+    NeedWantSavings? classification,
+  }) {
     return Transaction(
-      id: id, userId: userId, bankAccountId: bankAccountId,
+      id: id, bankAccountId: bankAccountId,
       entryReference: entryReference, amount: amount, currency: currency,
       isExpense: isExpense, bookingDate: bookingDate, merchantName: merchantName,
       merchantCategoryCode: merchantCategoryCode, description: description,
@@ -59,14 +63,22 @@ class Transaction {
   }
 
   factory Transaction.fromJson(Map<String, dynamic> j) => Transaction(
-    id: j['id'], userId: j['userId'], bankAccountId: j['bankAccountId'],
-    entryReference: j['entryReference'], amount: (j['amount'] as num).toDouble(),
-    currency: j['currency'], isExpense: j['isExpense'],
+    id: j['id'],
+    bankAccountId: j['bankAccountId'],
+    entryReference: j['entryReference'],
+    amount: (j['amount'] as num).toDouble(),
+    currency: j['currency'],
+    isExpense: j['isExpense'],
     bookingDate: DateTime.parse(j['bookingDate']),
-    merchantName: j['merchantName'], merchantCategoryCode: j['merchantCategoryCode'],
-    description: j['description'], categoryId: j['categoryId'],
-    categoryName: j['categoryName'], categoryIcon: j['categoryIcon'],
-    categoryColor: j['categoryColor'], isManual: j['isManual'],
-    isRecurring: j['isRecurring'], createdAt: DateTime.parse(j['createdAt']),
+    merchantName: j['merchantName'],
+    merchantCategoryCode: j['merchantCategoryCode'],
+    description: j['description'],
+    categoryId: j['categoryId'],
+    categoryName: j['categoryName'],
+    categoryIcon: j['categoryIcon'],
+    categoryColor: j['categoryColor'],
+    isManual: j['isManual'],
+    isRecurring: j['isRecurring'],
+    createdAt: DateTime.parse(j['createdAt']),
   );
 }

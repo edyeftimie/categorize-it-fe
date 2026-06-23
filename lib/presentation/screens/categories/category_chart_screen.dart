@@ -113,7 +113,7 @@ class _CategoryDropdown extends StatelessWidget {
           children: [
             Text(selected?.name ?? '', style: const TextStyle(color: Colors.white, fontSize: 14)),
             const Spacer(),
-            Icon(Icons.keyboard_arrow_down, color: AppColors.textMuted, size: 18),
+            const Icon(Icons.keyboard_arrow_down, color: AppColors.textMuted, size: 18),
           ],
         ),
       ),
@@ -143,7 +143,7 @@ class _SummaryRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('This month', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                const Text('This month', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                 const SizedBox(height: 4),
                 Text(formatRon(current), style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 4),
@@ -164,11 +164,11 @@ class _SummaryRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('6-month avg', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                const Text('6-month avg', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                 const SizedBox(height: 4),
                 Text(formatRon(avg), style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 4),
-                Text('per month', style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
+                const Text('per month', style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
               ],
             ),
           ),
@@ -314,7 +314,7 @@ class _ChartCard extends StatelessWidget {
           belowBarData: BarAreaData(
             show: true,
             gradient: LinearGradient(
-              colors: [AppColors.emerald.withOpacity(0.3), AppColors.emerald.withOpacity(0)],
+              colors: [AppColors.emerald.withValues(alpha: 0.3), AppColors.emerald.withValues(alpha: 0)],
               begin: Alignment.topCenter, end: Alignment.bottomCenter,
             ),
           ),
@@ -359,10 +359,10 @@ class _StatCell extends StatelessWidget {
       decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.divider)),
       child: Column(
         children: [
-          Text(label, style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
+          Text(label, style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
           const SizedBox(height: 4),
           Text(value, style: TextStyle(color: color, fontSize: 14, fontWeight: FontWeight.w600)),
-          Text('RON', style: TextStyle(color: AppColors.divider, fontSize: 10)),
+          const Text('RON', style: TextStyle(color: AppColors.divider, fontSize: 10)),
         ],
       ),
     ),
