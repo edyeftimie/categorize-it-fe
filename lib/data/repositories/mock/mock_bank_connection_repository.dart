@@ -1,6 +1,6 @@
-import '../../domain/models/bank.dart';
-import '../../domain/models/bank_connection.dart';
-import '../../domain/repositories/i_bank_connection_repository.dart';
+import '../../../domain/models/bank.dart';
+import '../../../domain/models/bank_connection.dart';
+import '../../../domain/repositories/i_bank_connection_repository.dart';
 import 'mock_data.dart';
 
 class MockBankConnectionRepository implements IBankConnectionRepository {

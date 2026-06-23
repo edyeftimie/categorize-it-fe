@@ -1,8 +1,10 @@
+import 'package:categoriseit_fe/core/services/google_sign_in_service.dart';
 import 'package:dio/dio.dart';
-import '../../core/network/api_exception.dart';
-import '../../core/services/token_storage.dart';
-import '../../domain/models/user.dart';
-import '../../domain/repositories/i_auth_repository.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import '../../../core/network/api_exception.dart';
+import '../../../core/services/token_storage.dart';
+import '../../../domain/models/user.dart';
+import '../../../domain/repositories/i_auth_repository.dart';
 
 class ApiAuthRepository implements IAuthRepository {
   // Verify these against your backend controllers.
@@ -35,7 +37,10 @@ class ApiAuthRepository implements IAuthRepository {
       _post(_googleLoginPath, {'idToken': idToken});
 
   @override
-  Future<void> logout() => _tokenStorage.clearAll();
+  Future<void> logout() async{
+    // await GoogleSignInService.signOut();
+    await _tokenStorage.clearAll();
+  }
 
   @override
   Future<User?> getCurrentUser() async {

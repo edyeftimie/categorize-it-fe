@@ -1,5 +1,5 @@
-import '../../domain/models/dashboard.dart';
-import '../../domain/repositories/i_dashboard_repository.dart';
+import '../../../domain/models/dashboard.dart';
+import '../../../domain/repositories/i_dashboard_repository.dart';
 import 'mock_data.dart';
 
 class MockDashboardRepository implements IDashboardRepository {

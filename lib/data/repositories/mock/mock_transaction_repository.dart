@@ -1,5 +1,5 @@
-import '../../domain/models/transaction.dart';
-import '../../domain/repositories/i_transaction_repository.dart';
+import '../../../domain/models/transaction.dart';
+import '../../../domain/repositories/i_transaction_repository.dart';
 import 'mock_data.dart';
 
 class MockTransactionRepository implements ITransactionRepository {

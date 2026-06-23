@@ -1,3 +1,4 @@
+import 'package:categoriseit_fe/core/services/google_sign_in_service.dart';
 import 'package:categoriseit_fe/domain/models/user.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/models/budget.dart';
@@ -11,13 +12,13 @@ import '../domain/repositories/i_category_repository.dart';
 import '../domain/repositories/i_dashboard_repository.dart';
 import '../domain/repositories/i_recommendation_repository.dart';
 import '../domain/repositories/i_transaction_repository.dart';
-import 'mock/mock_auth_repository.dart';
-import 'mock/mock_bank_connection_repository.dart';
-import 'mock/mock_budget_repository.dart';
-import 'mock/mock_category_repository.dart';
-import 'mock/mock_dashboard_repository.dart';
-import 'mock/mock_recommendation_repository.dart';
-import 'mock/mock_transaction_repository.dart';
+import 'repositories/mock/mock_auth_repository.dart';
+import 'repositories/mock/mock_bank_connection_repository.dart';
+import 'repositories/mock/mock_budget_repository.dart';
+import 'repositories/mock/mock_category_repository.dart';
+import 'repositories/mock/mock_dashboard_repository.dart';
+import 'repositories/mock/mock_recommendation_repository.dart';
+import 'repositories/mock/mock_transaction_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/services/connectivity_service.dart';
 import 'package:dio/dio.dart';
@@ -26,7 +27,7 @@ import '../core/network/dio_client.dart';
 import 'package:dio/dio.dart';
 import '../core/services/token_storage.dart';
 import '../core/network/dio_client.dart';
-import 'api/auth_repository.dart';
+import 'repositories/api/auth_repository.dart';
 
 final connectivityServiceProvider = Provider<ConnectivityService>((ref) {
   final service = ConnectivityService();
@@ -79,6 +80,7 @@ class AuthController extends StateNotifier<AsyncValue<User?>> {
   }
 
   Future<void> logout() async {
+    await GoogleSignInService.signOut();
     await _repo.logout();
     state = const AsyncValue.data(null);
   }
@@ -101,7 +103,7 @@ final recommendationRepositoryProvider = Provider<IRecommendationRepository>((re
 final bankConnectionRepositoryProvider = Provider<IBankConnectionRepository>((ref) => MockBankConnectionRepository());
 final dashboardRepositoryProvider      = Provider<IDashboardRepository>((ref)      => MockDashboardRepository());
 
-final currentUserProvider = FutureProvider<User?>((ref) => ref.read(authRepositoryProvider).getCurrentUser());
+// final currentUserProvider = FutureProvider<User?>((ref) => ref.read(authRepositoryProvider).getCurrentUser());
 final dashboardProvider  = FutureProvider<DashboardData>((ref) => ref.read(dashboardRepositoryProvider).getDashboard());
 final categoriesProvider = FutureProvider((ref) => ref.read(categoryRepositoryProvider).getCategories());
 final transactionsProvider = FutureProvider<List<Transaction>>((ref) => ref.read(transactionRepositoryProvider).getTransactions());

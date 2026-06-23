@@ -1,9 +1,9 @@
-import '../../domain/models/bank_connection.dart';
-import '../../domain/models/budget.dart';
-import '../../domain/models/category.dart';
-import '../../domain/models/dashboard.dart';
-import '../../domain/models/recommendation.dart';
-import '../../domain/models/transaction.dart';
+import '../../../domain/models/bank_connection.dart';
+import '../../../domain/models/budget.dart';
+import '../../../domain/models/category.dart';
+import '../../../domain/models/dashboard.dart';
+import '../../../domain/models/recommendation.dart';
+import '../../../domain/models/transaction.dart';
 
 class MockData {
   MockData._();

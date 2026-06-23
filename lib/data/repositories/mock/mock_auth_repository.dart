@@ -1,5 +1,5 @@
-import '../../domain/models/user.dart';
-import '../../domain/repositories/i_auth_repository.dart';
+import '../../../domain/models/user.dart';
+import '../../../domain/repositories/i_auth_repository.dart';
 
 class MockAuthRepository implements IAuthRepository {
   static const _mockUser = User(id: 'u1', email: 'eftimie.eduard28@gmail.com', username: 'Eduard');

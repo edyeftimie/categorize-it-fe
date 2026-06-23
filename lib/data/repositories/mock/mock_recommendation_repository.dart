@@ -1,5 +1,5 @@
-import '../../domain/models/recommendation.dart';
-import '../../domain/repositories/i_recommendation_repository.dart';
+import '../../../domain/models/recommendation.dart';
+import '../../../domain/repositories/i_recommendation_repository.dart';
 import 'mock_data.dart';
 
 class MockRecommendationRepository implements IRecommendationRepository {

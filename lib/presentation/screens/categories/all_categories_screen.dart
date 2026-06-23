@@ -1,7 +1,7 @@
 import 'package:categoriseit_fe/core/theme/app_colors.dart';
 import 'package:categoriseit_fe/core/utils/category_utils.dart';
 import 'package:categoriseit_fe/core/utils/format_utils.dart';
-import 'package:categoriseit_fe/data/mock/mock_data.dart';
+import 'package:categoriseit_fe/data/repositories/mock/mock_data.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

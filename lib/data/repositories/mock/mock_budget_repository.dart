@@ -1,5 +1,5 @@
-import '../../domain/models/budget.dart';
-import '../../domain/repositories/i_budget_repository.dart';
+import '../../../domain/models/budget.dart';
+import '../../../domain/repositories/i_budget_repository.dart';
 import 'mock_data.dart';
 
 class MockBudgetRepository implements IBudgetRepository {

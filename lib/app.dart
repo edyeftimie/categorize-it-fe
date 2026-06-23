@@ -26,7 +26,9 @@ class _AuthNotifier extends ChangeNotifier {
 final routerProvider = Provider<GoRouter>((ref) {
   final notifier = _AuthNotifier();
 
-  ref.listen<AsyncValue<User?>>(authControllerProvider, (_, __) => notifier.notify());
+  ref.listen<AsyncValue<User?>>(authControllerProvider, (_, __) {
+    Future.microtask(() => notifier.notify());
+  });
   ref.onDispose(notifier.dispose);
 
   return GoRouter(

@@ -18,9 +18,33 @@ class _State extends ConsumerState<AccountScreen> {
   void _toggle(String id) => setState(() =>
       _expanded.contains(id) ? _expanded.remove(id) : _expanded.add(id));
 
+  Future<void> _confirmLogout(BuildContext context) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(   // ← name it dialogContext
+        backgroundColor: AppColors.surface,
+        title: const Text('Log out', style: TextStyle(color: Colors.white)),
+        content: Text('Are you sure?', style: TextStyle(color: AppColors.textSecondary)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),  // ← dialogContext
+            child: Text('Cancel', style: TextStyle(color: AppColors.textMuted)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),   // ← dialogContext
+            child: const Text('Log out', style: TextStyle(color: AppColors.red)),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true && mounted) {
+      await ref.read(authControllerProvider.notifier).logout();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final userAsync = ref.watch(currentUserProvider);       // ← read from repo
+    final userAsync = ref.watch(authControllerProvider);
     final connectionsAsync = ref.watch(bankConnectionsProvider);
 
     return Scaffold(
@@ -55,7 +79,7 @@ class _State extends ConsumerState<AccountScreen> {
             const SizedBox(height: 24),
             Text('ACCOUNT', style: TextStyle(color: AppColors.textMuted, fontSize: 11, letterSpacing: 1.2)),
             const SizedBox(height: 10),
-            _OutlineButton(label: 'Log out', onTap: () {}),
+            _OutlineButton(label: 'Log out', onTap: () => _confirmLogout(context)),
           ],
         ),
       ),

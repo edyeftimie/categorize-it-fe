@@ -1,5 +1,5 @@
-import '../../domain/models/category.dart';
-import '../../domain/repositories/i_category_repository.dart';
+import '../../../domain/models/category.dart';
+import '../../../domain/repositories/i_category_repository.dart';
 import 'mock_data.dart';
 
 class MockCategoryRepository implements ICategoryRepository {
