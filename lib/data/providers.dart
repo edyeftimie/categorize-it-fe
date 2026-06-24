@@ -46,7 +46,6 @@ final dioProvider = Provider<Dio>((ref) {
   return DioClient(tokenStorage).dio;
 });
 
-// Auth state: loading = checking stored token; data(null) = unauthenticated; data(user) = authenticated
 class AuthController extends StateNotifier<AsyncValue<User?>> {
   final IAuthRepository _repo;
 
@@ -55,38 +54,54 @@ class AuthController extends StateNotifier<AsyncValue<User?>> {
   }
 
   Future<void> _init() async {
-    try {
-      final user = await _repo.getCurrentUser();
-      state = AsyncValue.data(user);
-    } catch (_) {
-      state = const AsyncValue.data(null);
-    }
+    state = await AsyncValue.guard(() => _repo.getCurrentUser());
   }
 
   Future<void> login({required String email, required String password}) async {
-    final result = await _repo.login(email: email, password: password);
-    state = AsyncValue.data(result.user);
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final result = await _repo.login(email: email, password: password);
+      return result.user;
+    });
   }
 
-  Future<void> register({required String email, required String password, required String username}) async {
-    final result = await _repo.register(email: email, password: password, username: username);
-    state = AsyncValue.data(result.user);
+  Future<void> register({required String name, required String email, required String password}) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final result = await _repo.register(username: name, email: email, password: password);
+      return result.user;
+    });
   }
 
-  Future<void> googleLogin({required String idToken}) async {
-    final result = await _repo.googleLogin(idToken: idToken);
-    state = AsyncValue.data(result.user);
+  Future<void> googleLogin() async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final idToken = await GoogleSignInService.getIdToken();
+      if (idToken == null) throw Exception('Google Sign-In was cancelled.');
+      final result = await _repo.googleLogin(idToken: idToken);
+      return result.user;
+    });
   }
 
   Future<void> logout() async {
-    await GoogleSignInService.signOut();
     await _repo.logout();
+    state = const AsyncValue.data(null);
+  }
+
+  // Synchronous — does NOT call backend. Resets state so router redirects to /login.
+  void forceLogout() {
     state = const AsyncValue.data(null);
   }
 }
 
+final googleSignInServiceProvider = Provider<GoogleSignInService>(
+  (ref) => GoogleSignInService(),
+);
+
 final authControllerProvider = StateNotifierProvider<AuthController, AsyncValue<User?>>(
-  (ref) => AuthController(ref.read(authRepositoryProvider)),
+  (ref) => AuthController(
+    ref.read(authRepositoryProvider),
+  ),
 );
 
 // repos with api

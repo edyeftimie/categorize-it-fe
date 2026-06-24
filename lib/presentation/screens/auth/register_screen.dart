@@ -56,7 +56,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     setState(() { _loading = true; _error = null; });
     try {
       await ref.read(authControllerProvider.notifier).register(
-        email: email, password: pass, username: name,
+        email: email, password: pass, name: name,
       );
       // GoRouter redirect handles navigation on success.
     } on ApiException catch (e) {

@@ -5,37 +5,34 @@ import '../services/token_storage.dart';
 import 'api_exception.dart';
 
 class DioClient {
-  final Dio dio;
+  late final Dio dio;
 
-  DioClient(TokenStorage tokenStorage)
-      : dio = Dio(
-          BaseOptions(
-            baseUrl: appBaseUrl,
-            connectTimeout: ApiConstants.connectTimeout,
-            receiveTimeout: ApiConstants.receiveTimeout,
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-            },
-          ),
-        ) {
+  DioClient(TokenStorage tokenStorage, {void Function()? onUnauthorized}) {
+    dio = Dio(
+      BaseOptions(
+        baseUrl: appBaseUrl,
+        connectTimeout: ApiConstants.connectTimeout,
+        receiveTimeout: ApiConstants.receiveTimeout,
+        headers: {'Content-Type': 'application/json'},
+      ),
+    );
     dio.interceptors.addAll([
       _AuthInterceptor(tokenStorage),
-      _ErrorInterceptor(tokenStorage),
+      _ErrorInterceptor(tokenStorage, onUnauthorized: onUnauthorized),
     ]);
   }
 }
 
 class _AuthInterceptor extends Interceptor {
-  final TokenStorage _tokenStorage;
-  _AuthInterceptor(this._tokenStorage);
+  final TokenStorage _storage;
+  _AuthInterceptor(this._storage);
 
   @override
   Future<void> onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    final token = await _tokenStorage.readToken();
+    final token = await _storage.readToken();
     if (token != null) {
       options.headers['Authorization'] = 'Bearer $token';
     }
@@ -44,61 +41,44 @@ class _AuthInterceptor extends Interceptor {
 }
 
 class _ErrorInterceptor extends Interceptor {
-  final TokenStorage _tokenStorage;
-  _ErrorInterceptor(this._tokenStorage);
+  final TokenStorage _storage;
+  final void Function()? onUnauthorized;
+
+  _ErrorInterceptor(this._storage, {this.onUnauthorized});
 
   @override
   Future<void> onError(
     DioException err,
     ErrorInterceptorHandler handler,
   ) async {
-    final statusCode = err.response?.statusCode;
+    if (err.response?.statusCode == 401) {
+      await _storage.deleteToken();
 
-    if (statusCode == 401) {
-      await _tokenStorage.deleteToken();
-      return handler.reject(_wrap(
-        err,
-        const ApiException(
-          statusCode: 401,
-          message: 'Session expired. Please log in again.',
-          isUnauthorized: true,
+      final isAuthEndpoint = err.requestOptions.path.contains('/authentication/');
+      if (!isAuthEndpoint) {
+        onUnauthorized?.call();
+      }
+
+      handler.reject(
+        DioException(
+          requestOptions: err.requestOptions,
+          response: err.response,
+          error: const ApiException(
+            statusCode: 401,
+            message: 'Session expired. Please log in again.',
+            isUnauthorized: true,
+          ),
         ),
-      ));
+      );
+      return;
     }
 
-    // Prefer the server's own message when available.
-    final serverMessage = _extractMessage(err.response?.data);
-    handler.reject(_wrap(
-      err,
-      ApiException(
-        statusCode: statusCode,
-        message: serverMessage ?? _defaultMessage(statusCode),
+    handler.reject(
+      DioException(
+        requestOptions: err.requestOptions,
+        response: err.response,
+        error: ApiException.fromDioException(err),
       ),
-    ));
+    );
   }
-
-  String? _extractMessage(dynamic body) {
-    if (body is Map) {
-      final v = body['message'] ?? body['title'];
-      return v is String && v.isNotEmpty ? v : null;
-    }
-    if (body is String && body.isNotEmpty) return body;
-    return null;
-  }
-
-  String _defaultMessage(int? code) => switch (code) {
-    400 => 'Invalid request.',
-    403 => 'You don\'t have permission to do that.',
-    404 => 'Resource not found.',
-    409 => 'Conflict with existing data.',
-    500 => 'Server error. Please try again later.',
-    _   => 'Something went wrong.',
-  };
-
-  DioException _wrap(DioException original, ApiException apiEx) => DioException(
-    requestOptions: original.requestOptions,
-    response: original.response,
-    type: original.type,
-    error: apiEx,
-  );
 }

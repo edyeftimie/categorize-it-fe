@@ -53,7 +53,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       final idToken = await GoogleSignInService.getIdToken();
       if (idToken == null) return;
-      await ref.read(authControllerProvider.notifier).googleLogin(idToken: idToken);
+      await ref.read(authControllerProvider.notifier).googleLogin();
     } on ApiException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (e) {
