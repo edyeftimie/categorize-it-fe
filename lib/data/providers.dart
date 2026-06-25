@@ -1,11 +1,16 @@
-import 'package:categoriseit_fe/core/services/google_sign_in_service.dart';
-import 'package:categoriseit_fe/data/repositories/api/budget_repository.dart';
-import 'package:categoriseit_fe/data/repositories/api/category_repository.dart';
-import 'package:categoriseit_fe/data/repositories/api/dashboard_repository.dart';
-import 'package:categoriseit_fe/data/repositories/api/recommendation_repository.dart';
-import 'package:categoriseit_fe/data/repositories/api/transaction_repository.dart';
-import 'package:categoriseit_fe/domain/models/user.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dio/dio.dart';
+import '../core/services/google_sign_in_service.dart';
+import '../data/repositories/api/bank_connection_repository.dart';
+import '../data/repositories/api/budget_repository.dart';
+import '../data/repositories/api/category_repository.dart';
+import '../data/repositories/api/dashboard_repository.dart';
+import '../data/repositories/api/recommendation_repository.dart';
+import '../data/repositories/api/transaction_repository.dart';
+import '../core/services/token_storage.dart';
+import '../core/network/dio_client.dart';
+import '../core/services/connectivity_service.dart';
+import '../domain/models/user.dart';
 import '../domain/models/budget.dart';
 import '../domain/models/dashboard.dart';
 import '../domain/models/recommendation.dart';
@@ -17,18 +22,14 @@ import '../domain/repositories/i_category_repository.dart';
 import '../domain/repositories/i_dashboard_repository.dart';
 import '../domain/repositories/i_recommendation_repository.dart';
 import '../domain/repositories/i_transaction_repository.dart';
+import 'repositories/api/auth_repository.dart';
 // import 'repositories/mock/mock_auth_repository.dart';
-import 'repositories/mock/mock_bank_connection_repository.dart';
-import 'repositories/mock/mock_budget_repository.dart';
+// import 'repositories/mock/mock_bank_connection_repository.dart';
+// import 'repositories/mock/mock_budget_repository.dart';
 // import 'repositories/mock/mock_category_repository.dart';
 // import 'repositories/mock/mock_dashboard_repository.dart';
-import 'repositories/mock/mock_recommendation_repository.dart';
+// import 'repositories/mock/mock_recommendation_repository.dart';
 // import 'repositories/mock/mock_transaction_repository.dart';
-import '../core/services/connectivity_service.dart';
-import 'package:dio/dio.dart';
-import '../core/services/token_storage.dart';
-import '../core/network/dio_client.dart';
-import 'repositories/api/auth_repository.dart';
 
 final connectivityServiceProvider = Provider<ConnectivityService>((ref) {
   final service = ConnectivityService();
@@ -132,6 +133,7 @@ final dashboardRepositoryProvider = Provider<IDashboardRepository>((ref) => Dash
 final transactionRepositoryProvider    = Provider<ITransactionRepository>((ref)    => TransactionRepository(ref.read(dioProvider)));
 final recommendationRepositoryProvider = Provider<IRecommendationRepository>((ref) => RecommendationRepository(ref.read(dioProvider)));
 final budgetRepositoryProvider = Provider<IBudgetRepository>((ref) => BudgetRepository(ref.read(dioProvider)));
+final bankConnectionRepositoryProvider = Provider<IBankConnectionRepository>((ref) => BankConnectionRepository(ref.read(dioProvider)));
 
 // repos with mock
 // final authRepositoryProvider           = Provider<IAuthRepository>((ref)           => MockAuthRepository());
@@ -139,7 +141,7 @@ final budgetRepositoryProvider = Provider<IBudgetRepository>((ref) => BudgetRepo
 // final categoryRepositoryProvider       = Provider<ICategoryRepository>((ref)       => MockCategoryRepository());
 // final budgetRepositoryProvider         = Provider<IBudgetRepository>((ref)         => MockBudgetRepository());
 // final recommendationRepositoryProvider = Provider<IRecommendationRepository>((ref) => MockRecommendationRepository());
-final bankConnectionRepositoryProvider = Provider<IBankConnectionRepository>((ref) => MockBankConnectionRepository());
+// final bankConnectionRepositoryProvider = Provider<IBankConnectionRepository>((ref) => MockBankConnectionRepository());
 // final dashboardRepositoryProvider      = Provider<IDashboardRepository>((ref)      => MockDashboardRepository());
 
 // final currentUserProvider = FutureProvider<User?>((ref) => ref.read(authRepositoryProvider).getCurrentUser());

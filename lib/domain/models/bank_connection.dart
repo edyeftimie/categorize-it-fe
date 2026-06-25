@@ -1,38 +1,39 @@
 class BankAccount {
   final String id;
-  // Not returned by the API (accounts are nested under their connection).
-  // Populated client-side after parsing if needed.
-  final String? bankConnectionId;
   final String uid;
   final String? iban;
   final String? name;
   final String currency;
+  final String? cashAccountType;
   final DateTime? lastSyncedAt;
 
   const BankAccount({
     required this.id,
-    this.bankConnectionId,
     required this.uid,
     this.iban,
     this.name,
     required this.currency,
+    this.cashAccountType,
     this.lastSyncedAt,
   });
 
+  // Shows masked IBAN when available, falls back to name or a placeholder.
   String get maskedIban {
-    if (iban == null || iban!.length < 8) return iban ?? '';
-    return '${iban!.substring(0, 8)} •••• ${iban!.substring(iban!.length - 4)}';
+    if (iban != null && iban!.length >= 8) {
+      return '${iban!.substring(0, 8)} •••• ${iban!.substring(iban!.length - 4)}';
+    }
+    if (iban != null && iban!.isNotEmpty) return iban!;
+    return name ?? '••••';
   }
 
   factory BankAccount.fromJson(Map<String, dynamic> j) => BankAccount(
-    id:           j['id']       as String,
-    uid:          j['uid']      as String,
-    iban:         j['iban']     as String?,
-    name:         j['name']     as String?,
-    currency:     j['currency'] as String,
-    lastSyncedAt: j['lastSyncedAt'] != null
-        ? DateTime.parse(j['lastSyncedAt'] as String)
-        : null,
+    id:              j['id'],
+    uid:             j['uid'],
+    iban:            j['iban'],
+    name:            j['name'],
+    currency:        j['currency'],
+    cashAccountType: j['cashAccountType'],
+    lastSyncedAt:    j['lastSyncedAt'] != null ? DateTime.parse(j['lastSyncedAt']) : null,
   );
 }
 
@@ -55,17 +56,17 @@ class BankConnection {
     required this.bankAccounts,
   });
 
-  bool get isActive  => status == 'Active';
-  bool get isExpired => status == 'Expired';
+  bool get isActive  => status == 'AUTHORIZED';
+  bool get isExpired => status == 'EXPIRED';
 
   factory BankConnection.fromJson(Map<String, dynamic> j) => BankConnection(
-    id:           j['id']           as String,
-    aspspName:    j['aspspName']    as String,
-    aspspCountry: j['aspspCountry'] as String,
-    validUntil:   DateTime.parse(j['validUntil'] as String),
-    status:       j['status']       as String,
-    createdAt:    DateTime.parse(j['createdAt']  as String),
-    bankAccounts: (j['accounts'] as List? ?? [])  // API key is 'accounts', not 'bankAccounts'
+    id:           j['id'],
+    aspspName:    j['aspspName'],
+    aspspCountry: j['aspspCountry'],
+    validUntil:   DateTime.parse(j['validUntil']),
+    status:       j['status'],
+    createdAt:    DateTime.parse(j['createdAt']),
+    bankAccounts: (j['accounts'] as List? ?? [])
         .map((a) => BankAccount.fromJson(a as Map<String, dynamic>))
         .toList(),
   );

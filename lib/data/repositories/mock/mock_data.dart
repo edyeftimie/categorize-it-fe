@@ -63,8 +63,8 @@ class MockData {
 
   static final bankConnections = [
     BankConnection(id: 'bc1', aspspName: 'Banca Transilvania', aspspCountry: 'RO', validUntil: DateTime(2026, 12, 31), status: 'Active', createdAt: DateTime(2026, 1, 1), bankAccounts: [
-    BankAccount(id: 'ba1', bankConnectionId: 'bc1', uid: 'uid1', iban: 'RO49BTRL00001234524521', name: 'Current Account', currency: 'RON', lastSyncedAt: DateTime.now().subtract(const Duration(minutes: 2))),
-    BankAccount(id: 'ba2', bankConnectionId: 'bc1', uid: 'uid2', iban: 'RO49BTRL00001234528832', name: 'Savings', currency: 'RON', lastSyncedAt: DateTime.now().subtract(const Duration(minutes: 2))),]),
+    BankAccount(id: 'ba1', uid: 'uid1', iban: 'RO49BTRL00001234524521', name: 'Current Account', currency: 'RON', lastSyncedAt: DateTime.now().subtract(const Duration(minutes: 2))),
+    BankAccount(id: 'ba2', uid: 'uid2', iban: 'RO49BTRL00001234528832', name: 'Savings', currency: 'RON', lastSyncedAt: DateTime.now().subtract(const Duration(minutes: 2))),]),
     BankConnection(id: 'bc2', aspspName: 'ING Bank', aspspCountry: 'RO', validUntil: DateTime(2025, 12, 31), status: 'Expired', createdAt: DateTime(2025, 1, 1), bankAccounts: []),
   ];
 
