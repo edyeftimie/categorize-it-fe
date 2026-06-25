@@ -30,7 +30,8 @@ class _State extends ConsumerState<CategoryTransactionsScreen> {
   @override
   Widget build(BuildContext context) {
     final categoriesAsync    = ref.watch(categoriesProvider);
-    final transactionsAsync  = ref.watch(transactionsProvider);
+    final previousAsync      = ref.watch(previousMonthTransactionsProvider);
+    final transactionsAsync  = ref.watch(currentMonthTransactionsProvider);
     final now                = DateTime.now();
     final prevMonthName      = _monthName(now.month == 1 ? 12 : now.month - 1);
 
@@ -79,7 +80,7 @@ class _State extends ConsumerState<CategoryTransactionsScreen> {
                 error:   (e, _) => Center(child: Text('$e')),
                 data: (allTxns) {
                   final current  = _filterByCategory(allTxns);
-                  final previous = _filterByCategory(MockData.previousMonthTransactions);
+                  final previous = _filterByCategory(previousAsync.valueOrNull ?? []);
                   final currentTotal  = current.fold(0.0,  (s, t) => s + t.amount);
                   final previousTotal = previous.fold(0.0, (s, t) => s + t.amount);
 

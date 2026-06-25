@@ -1,5 +1,6 @@
-import '../../../domain/models/recommendation.dart';
-import '../../../domain/repositories/i_recommendation_repository.dart';
+import 'package:categoriseit_fe/domain/models/recommendation.dart';
+import 'package:categoriseit_fe/domain/repositories/i_recommendation_repository.dart';
+
 import 'mock_data.dart';
 
 class MockRecommendationRepository implements IRecommendationRepository {
@@ -25,4 +26,10 @@ class MockRecommendationRepository implements IRecommendationRepository {
 
   @override
   Future<void> generate() => Future.delayed(const Duration(seconds: 1));
+
+  @override
+  Future<int> getUnreadCount() async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    return _recs.where((r) => !r.isRead && !r.isDismissed).length;
+  }
 }

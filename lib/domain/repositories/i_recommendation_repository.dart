@@ -5,4 +5,5 @@ abstract interface class IRecommendationRepository {
   Future<void> markAsRead(String id);
   Future<void> dismiss(String id);
   Future<void> generate();
+  Future<int> getUnreadCount();
 }

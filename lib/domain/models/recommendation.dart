@@ -17,8 +17,6 @@ class Recommendation {
   final String title;
   final String description;
   final String? categoryId;
-  final String? categoryName;
-  final String? categoryColor;
   final int priority;
   final bool isRead;
   final bool isDismissed;
@@ -30,39 +28,34 @@ class Recommendation {
     required this.title,
     required this.description,
     this.categoryId,
-    this.categoryName,
-    this.categoryColor,
     required this.priority,
     required this.isRead,
     required this.isDismissed,
     required this.createdAt,
   });
 
-  // Backend convention: 3 = High, 2 = Medium, 1 = Low
+  // Backend: 3=High, 2=Medium, 1=Low
   bool get isHigh   => priority == 3;
   bool get isMedium => priority == 2;
   bool get isLow    => priority == 1;
 
   Recommendation copyWith({bool? isRead, bool? isDismissed}) => Recommendation(
     id: id, type: type, title: title, description: description,
-    categoryId: categoryId, categoryName: categoryName, categoryColor: categoryColor,
-    priority: priority,
+    categoryId: categoryId, priority: priority,
     isRead: isRead ?? this.isRead,
     isDismissed: isDismissed ?? this.isDismissed,
     createdAt: createdAt,
   );
 
   factory Recommendation.fromJson(Map<String, dynamic> j) => Recommendation(
-    id: j['id'] as String,
-    type: recommendationTypeFromString(j['type'] as String),
-    title: j['title'] as String,
-    description: j['description'] as String,
-    categoryId: j['categoryId'] as String?,
-    categoryName: j['categoryName'] as String?,
-    categoryColor: j['categoryColor'] as String?,
-    priority: j['priority'] as int,
-    isRead: j['isRead'] as bool,
-    isDismissed: j['isDismissed'] as bool,
-    createdAt: DateTime.parse(j['createdAt'] as String),
+    id: j['id'],
+    type: recommendationTypeFromString(j['type']),
+    title: j['title'],
+    description: j['description'],
+    categoryId: j['categoryId'],
+    priority: j['priority'],
+    isRead: j['isRead'],
+    isDismissed: j['isDismissed'],
+    createdAt: DateTime.parse(j['createdAt']),
   );
 }

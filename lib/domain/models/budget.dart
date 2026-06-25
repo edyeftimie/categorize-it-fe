@@ -38,13 +38,13 @@ class Budget {
   );
 
   factory Budget.fromJson(Map<String, dynamic> j) => Budget(
-    id:            j['id']           as String,
-    categoryId:    j['categoryId']   as String,
-    categoryName:  j['categoryName'] as String,
-    categoryIcon:  j['categoryIcon'] as String?,
-    categoryColor: j['categoryColor'] as String?,
-    monthlyLimit:  (j['monthlyLimit'] as num).toDouble(),
-    spent:         (j['amountSpent']  as num?)?.toDouble() ?? 0,  // API field is amountSpent
-    currency:      j['currency'] as String,
+    id: j['id'],
+    categoryId: j['categoryId'],
+    categoryName: j['categoryName'],
+    categoryIcon: j['categoryIcon'],
+    categoryColor: j['categoryColor'],
+    monthlyLimit: (j['monthlyLimit'] as num).toDouble(),
+    spent: (j['amountSpent'] as num?)?.toDouble() ?? 0,
+    currency: j['currency'],
   );
 }

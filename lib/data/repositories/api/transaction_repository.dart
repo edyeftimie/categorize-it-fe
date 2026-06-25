@@ -94,7 +94,6 @@ class TransactionRepository implements ITransactionRepository {
         '/api/transactions/$transactionId/category',
         data: {'categoryId': categoryId},
       );
-      // API returns 204. Fetch the current transaction list and find by id.
       final all = await getTransactions();
       return all.firstWhere((t) => t.id == transactionId);
     } on DioException catch (e) {

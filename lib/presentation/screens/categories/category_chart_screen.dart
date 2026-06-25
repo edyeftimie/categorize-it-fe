@@ -9,9 +9,15 @@ import '../../../domain/models/dashboard.dart';
 
 String _monthLabel(MonthlyAmount m) {
   const names = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  return names[m.month];
+                  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return names[m.month.clamp(1, 12)];
 }
+
+// Returns [] immediately for empty categoryId so no API call fires.
+final _seriesProvider = FutureProvider.family<List<MonthlyAmount>, String>((ref, categoryId) {
+  if (categoryId.isEmpty) return Future.value([]);
+  return ref.read(dashboardRepositoryProvider).getMonthlySeries(categoryId);
+});
 
 class CategoryChartScreen extends ConsumerStatefulWidget {
   final String? categoryId;
@@ -24,7 +30,6 @@ class CategoryChartScreen extends ConsumerStatefulWidget {
 class _State extends ConsumerState<CategoryChartScreen> {
   bool _isBar = true;
   String? _categoryId;
-  late final AsyncValue<List<MonthlyAmount>> _seriesAsync;
 
   @override
   void initState() {
@@ -35,7 +40,11 @@ class _State extends ConsumerState<CategoryChartScreen> {
   @override
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(categoriesProvider);
-    final seriesAsync = ref.watch(_seriesProvider(_categoryId ?? 'cat1'));
+    final cats = categoriesAsync.valueOrNull ?? [];
+
+    // Prefer explicitly-selected category, then first from list, then '' (no-op sentinel).
+    final effectiveId = _categoryId ?? (cats.isNotEmpty ? cats.first.id : '');
+    final seriesAsync = ref.watch(_seriesProvider(effectiveId));
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -45,7 +54,14 @@ class _State extends ConsumerState<CategoryChartScreen> {
           children: [
             Row(
               children: [
-                GestureDetector(onTap: () => context.pop(), child: Container(padding: const EdgeInsets.all(8), decoration: const BoxDecoration(color: AppColors.surface, shape: BoxShape.circle), child: const Icon(Icons.arrow_back, color: Colors.white, size: 20))),
+                GestureDetector(
+                  onTap: () => context.pop(),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: const BoxDecoration(color: AppColors.surface, shape: BoxShape.circle),
+                    child: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+                  ),
+                ),
                 const SizedBox(width: 16),
                 const Text('Spending Chart', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w500)),
               ],
@@ -53,25 +69,31 @@ class _State extends ConsumerState<CategoryChartScreen> {
             const SizedBox(height: 16),
             categoriesAsync.whenOrNull(data: (cats) => _CategoryDropdown(
               categories: cats,
-              selectedId: _categoryId,
+              selectedId: effectiveId.isNotEmpty ? effectiveId : null,
               onChanged: (id) => setState(() => _categoryId = id),
             )) ?? const SizedBox.shrink(),
             const SizedBox(height: 12),
-            seriesAsync.when(
-              loading: () => const SizedBox(height: 200, child: Center(child: CircularProgressIndicator(color: AppColors.emerald))),
-              error: (e, _) => Text('$e'),
-              data: (series) => Column(
-                children: [
-                  _SummaryRow(series: series),
-                  const SizedBox(height: 12),
-                  _ChartToggle(isBar: _isBar, onToggle: (v) => setState(() => _isBar = v)),
-                  const SizedBox(height: 12),
-                  _ChartCard(series: series, isBar: _isBar),
-                  const SizedBox(height: 12),
-                  _StatsRow(series: series),
-                ],
+            if (effectiveId.isEmpty)
+              const SizedBox(height: 200, child: Center(child: CircularProgressIndicator(color: AppColors.emerald)))
+            else
+              seriesAsync.when(
+                loading: () => const SizedBox(height: 200, child: Center(child: CircularProgressIndicator(color: AppColors.emerald))),
+                error: (e, _) => Text('$e', style: const TextStyle(color: AppColors.red)),
+                data: (series) {
+                  if (series.isEmpty) return const _EmptyState();
+                  return Column(
+                    children: [
+                      _SummaryRow(series: series),
+                      const SizedBox(height: 12),
+                      _ChartToggle(isBar: _isBar, onToggle: (v) => setState(() => _isBar = v)),
+                      const SizedBox(height: 12),
+                      _ChartCard(series: series, isBar: _isBar),
+                      const SizedBox(height: 12),
+                      _StatsRow(series: series),
+                    ],
+                  );
+                },
               ),
-            ),
           ],
         ),
       ),
@@ -79,8 +101,33 @@ class _State extends ConsumerState<CategoryChartScreen> {
   }
 }
 
-final _seriesProvider = FutureProvider.family<List<MonthlyAmount>, String>((ref, categoryId) =>
-  ref.read(dashboardRepositoryProvider).getMonthlySeries(categoryId));
+// ── Widgets ───────────────────────────────────────────────────────────────────
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.divider),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.bar_chart_outlined, color: AppColors.textMuted, size: 32),
+            const SizedBox(height: 8),
+            Text('No spending in the last 6 months', style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class _CategoryDropdown extends StatelessWidget {
   final List categories;
@@ -91,8 +138,8 @@ class _CategoryDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selected = categories.any((c) => c.id == selectedId)
-    ? categories.firstWhere((c) => c.id == selectedId)
-    : categories.first;
+        ? categories.firstWhere((c) => c.id == selectedId)
+        : categories.first;
     return GestureDetector(
       onTap: () => showModalBottomSheet(
         context: context,
@@ -113,7 +160,7 @@ class _CategoryDropdown extends StatelessWidget {
           children: [
             Text(selected?.name ?? '', style: const TextStyle(color: Colors.white, fontSize: 14)),
             const Spacer(),
-            const Icon(Icons.keyboard_arrow_down, color: AppColors.textMuted, size: 18),
+            Icon(Icons.keyboard_arrow_down, color: AppColors.textMuted, size: 18),
           ],
         ),
       ),
@@ -122,17 +169,31 @@ class _CategoryDropdown extends StatelessWidget {
 }
 
 class _SummaryRow extends StatelessWidget {
-  final List<MonthlyAmount> series;
+  final List<MonthlyAmount> series; // guaranteed non-empty
   const _SummaryRow({required this.series});
 
   @override
   Widget build(BuildContext context) {
     final current  = series.last.total;
-    final previous = series[series.length - 2].total;
-    final diff     = current - previous;
-    final pct      = previous > 0 ? (diff.abs() / previous * 100).toStringAsFixed(1) : '—';
-    final isUp     = diff > 0;
+    final previous = series.length >= 2 ? series[series.length - 2].total : null;
     final avg      = series.fold(0.0, (s, m) => s + m.total) / series.length;
+
+    final Widget trendWidget;
+    if (previous != null) {
+      final diff = current - previous;
+      final isUp = diff > 0;
+      final pct  = previous > 0 ? (diff.abs() / previous * 100).toStringAsFixed(1) : null;
+      trendWidget = Row(children: [
+        Icon(isUp ? Icons.trending_up : Icons.trending_down, size: 12, color: isUp ? AppColors.red : AppColors.emerald),
+        const SizedBox(width: 4),
+        Text(
+          pct != null ? '${isUp ? '+' : '-'}$pct% vs last' : '—',
+          style: TextStyle(color: isUp ? AppColors.red : AppColors.emerald, fontSize: 11),
+        ),
+      ]);
+    } else {
+      trendWidget = Text('First month recorded', style: TextStyle(color: AppColors.textMuted, fontSize: 11));
+    }
 
     return Row(
       children: [
@@ -143,15 +204,11 @@ class _SummaryRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('This month', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                Text('This month', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                 const SizedBox(height: 4),
                 Text(formatRon(current), style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 4),
-                Row(children: [
-                  Icon(isUp ? Icons.trending_up : Icons.trending_down, size: 12, color: isUp ? AppColors.red : AppColors.emerald),
-                  const SizedBox(width: 4),
-                  Text('${isUp ? '+' : '-'}$pct% vs last', style: TextStyle(color: isUp ? AppColors.red : AppColors.emerald, fontSize: 11)),
-                ]),
+                trendWidget,
               ],
             ),
           ),
@@ -164,11 +221,11 @@ class _SummaryRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('6-month avg', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                Text('${series.length}-month avg', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                 const SizedBox(height: 4),
                 Text(formatRon(avg), style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 4),
-                const Text('per month', style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
+                Text('per month', style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
               ],
             ),
           ),
@@ -211,15 +268,22 @@ class _Tab extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(color: active ? AppColors.emerald : Colors.transparent, borderRadius: BorderRadius.circular(9)),
-        child: Center(child: Text(label, style: TextStyle(color: active ? Colors.black : AppColors.textSecondary, fontSize: 14, fontWeight: active ? FontWeight.w600 : FontWeight.normal))),
+        decoration: BoxDecoration(
+          color: active ? AppColors.emerald : Colors.transparent,
+          borderRadius: BorderRadius.circular(9),
+        ),
+        child: Center(child: Text(label, style: TextStyle(
+          color: active ? Colors.black : AppColors.textSecondary,
+          fontSize: 14,
+          fontWeight: active ? FontWeight.w600 : FontWeight.normal,
+        ))),
       ),
     ),
   );
 }
 
 class _ChartCard extends StatelessWidget {
-  final List<MonthlyAmount> series;
+  final List<MonthlyAmount> series; // guaranteed non-empty
   final bool isBar;
   const _ChartCard({required this.series, required this.isBar});
 
@@ -228,10 +292,7 @@ class _ChartCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 16, 12, 8),
       decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.divider)),
-      child: SizedBox(
-        height: 180,
-        child: isBar ? _buildBar() : _buildLine(),
-      ),
+      child: SizedBox(height: 180, child: isBar ? _buildBar() : _buildLine()),
     );
   }
 
@@ -259,7 +320,7 @@ class _ChartCard extends StatelessWidget {
       barTouchData: BarTouchData(
         touchTooltipData: BarTouchTooltipData(
           getTooltipItem: (group, _, rod, __) => BarTooltipItem(
-            '${series[group.x].month}\n${rod.toY.toInt()} RON',
+            '${_monthLabel(series[group.x])}\n${rod.toY.toInt()} RON',
             const TextStyle(color: Colors.white, fontSize: 12),
           ),
         ),
@@ -277,7 +338,12 @@ class _ChartCard extends StatelessWidget {
       ),
       barGroups: series.asMap().entries.map((e) => BarChartGroupData(
         x: e.key,
-        barRods: [BarChartRodData(toY: e.value.total, color: AppColors.emerald, width: 18, borderRadius: const BorderRadius.vertical(top: Radius.circular(4)))],
+        barRods: [BarChartRodData(
+          toY: e.value.total,
+          color: AppColors.emerald,
+          width: 18,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+        )],
       )).toList(),
     ),
     swapAnimationDuration: const Duration(milliseconds: 250),
@@ -288,7 +354,7 @@ class _ChartCard extends StatelessWidget {
       lineTouchData: LineTouchData(
         touchTooltipData: LineTouchTooltipData(
           getTooltipItems: (spots) => spots.map((s) => LineTooltipItem(
-            '${series[s.x.toInt()].month}\n${s.y.toInt()} RON',
+            '${_monthLabel(series[s.x.toInt()])}\n${s.y.toInt()} RON',
             const TextStyle(color: Colors.white, fontSize: 12),
           )).toList(),
         ),
@@ -310,11 +376,13 @@ class _ChartCard extends StatelessWidget {
           isCurved: true,
           color: AppColors.emerald,
           barWidth: 2,
-          dotData: FlDotData(getDotPainter: (_, __, ___, ____) => FlDotCirclePainter(radius: 3, color: AppColors.emerald, strokeWidth: 0, strokeColor: Colors.transparent)),
+          dotData: FlDotData(getDotPainter: (_, __, ___, ____) => FlDotCirclePainter(
+            radius: 3, color: AppColors.emerald, strokeWidth: 0, strokeColor: Colors.transparent,
+          )),
           belowBarData: BarAreaData(
             show: true,
             gradient: LinearGradient(
-              colors: [AppColors.emerald.withValues(alpha: 0.3), AppColors.emerald.withValues(alpha: 0)],
+              colors: [AppColors.emerald.withOpacity(0.3), AppColors.emerald.withOpacity(0)],
               begin: Alignment.topCenter, end: Alignment.bottomCenter,
             ),
           ),
@@ -326,7 +394,7 @@ class _ChartCard extends StatelessWidget {
 }
 
 class _StatsRow extends StatelessWidget {
-  final List<MonthlyAmount> series;
+  final List<MonthlyAmount> series; // guaranteed non-empty
   const _StatsRow({required this.series});
 
   @override
@@ -359,10 +427,10 @@ class _StatCell extends StatelessWidget {
       decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.divider)),
       child: Column(
         children: [
-          Text(label, style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
+          Text(label, style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
           const SizedBox(height: 4),
           Text(value, style: TextStyle(color: color, fontSize: 14, fontWeight: FontWeight.w600)),
-          const Text('RON', style: TextStyle(color: AppColors.divider, fontSize: 10)),
+          Text('RON', style: TextStyle(color: AppColors.divider, fontSize: 10)),
         ],
       ),
     ),

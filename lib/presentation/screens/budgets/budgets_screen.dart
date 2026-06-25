@@ -135,47 +135,50 @@ class _BudgetCard extends StatelessWidget {
         ? (AppColors.yellow, AppColors.yellowSubtle)
         : (AppColors.emerald, AppColors.emeraldSubtle);
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16)),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
-                child: Icon(icon, color: color, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Expanded(child: Text(budget.categoryName, style: const TextStyle(color: Colors.white, fontSize: 14))),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(color: statusBg, borderRadius: BorderRadius.circular(20)),
-                child: Text(budget.statusLabel, style: TextStyle(color: statusColor, fontSize: 11, fontWeight: FontWeight.w500)),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(3),
-            child: LinearProgressIndicator(
-              value: budget.percentage,
-              minHeight: 6,
-              backgroundColor: AppColors.divider,
-              valueColor: AlwaysStoppedAnimation(budget.isOverBudget ? AppColors.red : color),
+    return GestureDetector(                                          // ← add
+      onTap: () => context.push('/budgets/add', extra: budget),     // ← add
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16)),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
+                  child: Icon(icon, color: color, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(child: Text(budget.categoryName, style: const TextStyle(color: Colors.white, fontSize: 14))),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(color: statusBg, borderRadius: BorderRadius.circular(20)),
+                  child: Text(budget.statusLabel, style: TextStyle(color: statusColor, fontSize: 11, fontWeight: FontWeight.w500)),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('${formatRon(budget.spent)} spent', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
-              Text('${formatRon(budget.monthlyLimit)} limit', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
-            ],
-          ),
-        ],
-      ),
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(3),
+              child: LinearProgressIndicator(
+                value: budget.percentage,
+                minHeight: 6,
+                backgroundColor: AppColors.divider,
+                valueColor: AlwaysStoppedAnimation(budget.isOverBudget ? AppColors.red : color),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('${formatRon(budget.spent)} spent', style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
+                Text('${formatRon(budget.monthlyLimit)} limit', style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
+              ],
+            ),
+          ],
+        ),
+      ),                                                             // ← close GestureDetector
     );
   }
 }

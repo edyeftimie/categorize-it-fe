@@ -1,3 +1,4 @@
+import 'package:categoriseit_fe/domain/models/budget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -29,7 +30,22 @@ final routerProvider = Provider<GoRouter>((ref) {
   ref.listen<AsyncValue<User?>>(authControllerProvider, (_, __) {
     Future.microtask(() => notifier.notify());
   });
+
   ref.onDispose(notifier.dispose);
+
+    ref.listen<AsyncValue<User?>>(
+    authControllerProvider,
+    (prev, next) {
+      if (prev?.valueOrNull?.id != next.valueOrNull?.id) {
+        ref.invalidate(dashboardProvider);
+        ref.invalidate(transactionsProvider);
+        ref.invalidate(categoriesProvider);
+        ref.invalidate(budgetsProvider);
+        ref.invalidate(recommendationsProvider);
+        ref.invalidate(bankConnectionsProvider);
+      }
+    },
+  );
 
   return GoRouter(
     navigatorKey: _rootKey,
@@ -68,10 +84,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/home/category-chart',
         builder: (_, state) => CategoryChartScreen(categoryId: state.extra as String?),
       ),
+      // GoRoute(
+      //   parentNavigatorKey: _rootKey,
+      //   path: '/budgets/add',
+      //   builder: (_, __) => const AddBudgetScreen(),
+      // ),
       GoRoute(
         parentNavigatorKey: _rootKey,
         path: '/budgets/add',
-        builder: (_, __) => const AddBudgetScreen(),
+        builder: (_, state) => AddBudgetScreen(budget: state.extra as Budget?),
       ),
 
       StatefulShellRoute.indexedStack(
