@@ -1,6 +1,14 @@
+// import 'package:flutter/material.dart';
+// import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import 'package:go_router/go_router.dart';
+// import '../../../core/theme/app_colors.dart';
+// import '../../../data/providers.dart';
+// import '../../../domain/models/bank_connection.dart';
+// import '../../../domain/models/user.dart';
 import 'package:categoriseit_fe/domain/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/providers.dart';
 import '../../../domain/models/bank_connection.dart';
@@ -18,20 +26,59 @@ class _State extends ConsumerState<AccountScreen> {
   void _toggle(String id) => setState(() =>
       _expanded.contains(id) ? _expanded.remove(id) : _expanded.add(id));
 
+  void _showDisconnectDialog(BankConnection c) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: const Text('Disconnect bank', style: TextStyle(color: Colors.white)),
+        content: Text(
+          'Remove your ${c.aspspName} connection? Your existing transactions will be kept.',
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              try {
+                await ref.read(bankConnectionRepositoryProvider).disconnect(c.id);
+                ref.invalidate(bankConnectionsProvider);
+                ref.invalidate(dashboardProvider);
+                ref.invalidate(transactionsProvider);
+                ref.invalidate(recommendationsProvider);
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to disconnect: $e'), backgroundColor: AppColors.red),
+                  );
+                }
+              }
+            },
+            child: const Text('Disconnect', style: TextStyle(color: AppColors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _confirmLogout(BuildContext context) async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(   // ← name it dialogContext
+      builder: (dialogContext) => AlertDialog(
         backgroundColor: AppColors.surface,
         title: const Text('Log out', style: TextStyle(color: Colors.white)),
         content: const Text('Are you sure?', style: TextStyle(color: AppColors.textSecondary)),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),  // ← dialogContext
+            onPressed: () => Navigator.pop(dialogContext, false),
             child: const Text('Cancel', style: TextStyle(color: AppColors.textMuted)),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(dialogContext, true),   // ← dialogContext
+            onPressed: () => Navigator.pop(dialogContext, true),
             child: const Text('Log out', style: TextStyle(color: AppColors.red)),
           ),
         ],
@@ -58,21 +105,27 @@ class _State extends ConsumerState<AccountScreen> {
             userAsync.when(
               loading: () => const SizedBox(height: 88, child: Center(child: CircularProgressIndicator(color: AppColors.emerald))),
               error: (_, __) => const SizedBox.shrink(),
-              data: (user) => _ProfileCard(user: user),     // ← pass user
+              data: (user) => _ProfileCard(user: user),
             ),
             const SizedBox(height: 24),
-            const Text('CONNECTED BANKS', style: TextStyle(color: AppColors.textMuted, fontSize: 11, letterSpacing: 1.2)),
+            Text('CONNECTED BANKS', style: TextStyle(color: AppColors.textMuted, fontSize: 11, letterSpacing: 1.2)),
             const SizedBox(height: 10),
             connectionsAsync.when(
               loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
-              error: (e, _) => Text('$e'),
+              error: (e, _) => Text('$e', style: const TextStyle(color: Colors.white)),
               data: (conns) => Column(
                 children: [
                   ...conns.map((c) => Padding(
                     padding: const EdgeInsets.only(bottom: 10),
-                    child: _ConnectionCard(connection: c, expanded: _expanded.contains(c.id), onToggle: () => _toggle(c.id)),
+                    child: _ConnectionCard(
+                      connection: c,
+                      expanded: _expanded.contains(c.id),
+                      onToggle: () => _toggle(c.id),
+                      onDisconnect: () => _showDisconnectDialog(c),
+                      onReconnect: () => context.push('/banks/select'),
+                    ),
                   )),
-                  _AddBankButton(),
+                  _AddBankButton(onTap: () => context.push('/banks/select')),
                 ],
               ),
             ),
@@ -115,12 +168,12 @@ class _ProfileCard extends StatelessWidget {
                 children: [
                   Text(name,  style: const TextStyle(color: Colors.white, fontSize: 16)),
                   const SizedBox(height: 4),
-                  Text(email, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                  Text(email, style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                 ],
               ),
             ],
           ),
-          const Positioned(
+          Positioned(
             top: 0, right: 0,
             child: Icon(Icons.edit_outlined, color: AppColors.textSecondary, size: 18),
           ),
@@ -134,13 +187,22 @@ class _ConnectionCard extends StatelessWidget {
   final BankConnection connection;
   final bool expanded;
   final VoidCallback onToggle;
-  const _ConnectionCard({required this.connection, required this.expanded, required this.onToggle});
+  final VoidCallback onDisconnect;
+  final VoidCallback onReconnect;
+
+  const _ConnectionCard({
+    required this.connection,
+    required this.expanded,
+    required this.onToggle,
+    required this.onDisconnect,
+    required this.onReconnect,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final isActive  = connection.isActive;
-    final color     = isActive ? AppColors.emerald : AppColors.orange;
-    final colorBg   = isActive ? AppColors.emeraldSubtle : AppColors.orangeSubtle;
+    final isActive = connection.isActive;
+    final color    = isActive ? AppColors.emerald : AppColors.orange;
+    final colorBg  = isActive ? AppColors.emeraldSubtle : AppColors.orangeSubtle;
 
     return Container(
       decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16)),
@@ -174,32 +236,41 @@ class _ConnectionCard extends StatelessWidget {
                         const SizedBox(height: 2),
                         Text(
                           isActive
-                            ? '${connection.bankAccounts.length} accounts • Expires ${connection.validUntil.month}/${connection.validUntil.year}'
-                            : 'Reconnect to sync transactions',
-                          style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+                              ? '${connection.bankAccounts.length} accounts · Expires ${connection.validUntil.month}/${connection.validUntil.year}'
+                              : 'Reconnect to sync transactions',
+                          style: TextStyle(color: AppColors.textMuted, fontSize: 12),
                         ),
                       ],
                     ),
                   ),
-                  if (isActive) Icon(expanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, color: AppColors.textSecondary),
+                  if (isActive)
+                    Icon(expanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, color: AppColors.textSecondary),
                 ],
               ),
             ),
           ),
           AnimatedCrossFade(
             firstChild: const SizedBox.shrink(),
-            secondChild: _ExpandedContent(connection: connection),
+            secondChild: _ExpandedContent(connection: connection, onDisconnect: onDisconnect),
             crossFadeState: expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             duration: const Duration(milliseconds: 200),
           ),
           if (!isActive)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(border: Border.all(color: AppColors.emerald), borderRadius: BorderRadius.circular(12)),
-                child: const Center(child: Text('Reconnect', style: TextStyle(color: AppColors.emerald, fontSize: 14))),
+              child: GestureDetector(
+                onTap: onReconnect,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.emerald),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Center(
+                    child: Text('Reconnect', style: TextStyle(color: AppColors.emerald, fontSize: 14)),
+                  ),
+                ),
               ),
             ),
         ],
@@ -210,7 +281,8 @@ class _ConnectionCard extends StatelessWidget {
 
 class _ExpandedContent extends StatelessWidget {
   final BankConnection connection;
-  const _ExpandedContent({required this.connection});
+  final VoidCallback onDisconnect;
+  const _ExpandedContent({required this.connection, required this.onDisconnect});
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +303,7 @@ class _ExpandedContent extends StatelessWidget {
                 children: [
                   Text(a.name ?? 'Account', style: const TextStyle(color: Colors.white, fontSize: 13)),
                   const SizedBox(height: 2),
-                  Text(a.maskedIban, style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                  Text(a.maskedIban, style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
                 ],
               ),
             ),
@@ -241,11 +313,17 @@ class _ExpandedContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(children: [
-                const Icon(Icons.refresh, size: 14, color: AppColors.textMuted),
+                Icon(Icons.refresh, size: 14, color: AppColors.textMuted),
                 const SizedBox(width: 6),
-                Text(lastSync != null ? 'Last synced: ${_ago(lastSync)}' : 'Never synced', style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                Text(
+                  lastSync != null ? 'Last synced: ${_ago(lastSync)}' : 'Never synced',
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+                ),
               ]),
-              const Text('Disconnect', style: TextStyle(color: AppColors.red, fontSize: 12)),
+              GestureDetector(
+                onTap: onDisconnect,
+                child: const Text('Disconnect', style: TextStyle(color: AppColors.red, fontSize: 12)),
+              ),
             ],
           ),
         ],
@@ -262,22 +340,28 @@ class _ExpandedContent extends StatelessWidget {
 }
 
 class _AddBankButton extends StatelessWidget {
+  final VoidCallback onTap;
+  const _AddBankButton({required this.onTap});
+
   @override
-  Widget build(BuildContext context) => Container(
-    width: double.infinity,
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: AppColors.border, style: BorderStyle.solid, width: 2),
-    ),
-    child: const Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.add, color: AppColors.emerald, size: 20),
-        SizedBox(width: 8),
-        Text('Connect another bank', style: TextStyle(color: AppColors.emerald, fontSize: 14)),
-      ],
+  Widget build(BuildContext context) => GestureDetector(
+    onTap: onTap,
+    child: Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 2),
+      ),
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.add, color: AppColors.emerald, size: 20),
+          SizedBox(width: 8),
+          Text('Connect another bank', style: TextStyle(color: AppColors.emerald, fontSize: 14)),
+        ],
+      ),
     ),
   );
 }

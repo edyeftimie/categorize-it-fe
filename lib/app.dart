@@ -1,12 +1,18 @@
-import 'package:categoriseit_fe/domain/models/budget.dart';
+import 'dart:async';
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
+import 'core/network/api_exception.dart';
+import 'core/theme/app_colors.dart';
 import 'data/providers.dart';
+import 'domain/models/budget.dart';
 import 'domain/models/user.dart';
 import 'presentation/screens/account/account_screen.dart';
 import 'presentation/screens/auth/login_screen.dart';
 import 'presentation/screens/auth/register_screen.dart';
+import 'presentation/screens/banks/select_bank_screen.dart';
 import 'presentation/screens/budgets/add_budget_screen.dart';
 import 'presentation/screens/budgets/budgets_screen.dart';
 import 'presentation/screens/categories/all_categories_screen.dart';
@@ -24,16 +30,22 @@ class _AuthNotifier extends ChangeNotifier {
   void notify() => notifyListeners();
 }
 
+const _storage     = FlutterSecureStorage();
+const _lastCodeKey = 'bank_cb_last_code';
+
 final routerProvider = Provider<GoRouter>((ref) {
   final notifier = _AuthNotifier();
 
-  ref.listen<AsyncValue<User?>>(authControllerProvider, (_, __) {
-    Future.microtask(() => notifier.notify());
+  ref.listen<AsyncValue<User?>>(authControllerProvider, (prev, next) {
+    print('AUTH CHANGED: prev=${prev?.valueOrNull?.id}, next=${next.valueOrNull?.id}, isLoading=${next.isLoading}');
+    notifier.notify();
   });
 
-  ref.onDispose(notifier.dispose);
+  // ref.listen<AsyncValue<User?>>(authControllerProvider, (_, __) {
+  //   Future.microtask(() => notifier.notify());
+  // });
 
-    ref.listen<AsyncValue<User?>>(
+  ref.listen<AsyncValue<User?>>(
     authControllerProvider,
     (prev, next) {
       if (prev?.valueOrNull?.id != next.valueOrNull?.id) {
@@ -47,15 +59,19 @@ final routerProvider = Provider<GoRouter>((ref) {
     },
   );
 
+  ref.onDispose(notifier.dispose);
+
   return GoRouter(
     navigatorKey: _rootKey,
     initialLocation: '/home',
     refreshListenable: notifier,
     redirect: (context, state) {
       final authAsync = ref.read(authControllerProvider);
-
-      // Don't redirect while the app is checking the stored token.
+      print('REDIRECT: loc=${state.matchedLocation}, isLoading=${authAsync.isLoading}, authed=${authAsync.valueOrNull != null}');
       if (authAsync.isLoading) return null;
+    // redirect: (context, state) {
+    //   final authAsync = ref.read(authControllerProvider);
+    //   if (authAsync.isLoading) return null;
 
       final isAuthenticated = authAsync.valueOrNull != null;
       final loc = state.matchedLocation;
@@ -65,6 +81,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (isAuthenticated && isAuthRoute) return '/home';
       return null;
     },
+    onException: (_, state, router) {
+      if (state.uri.scheme.toLowerCase() == 'categoriseit') return;
+    },
+    // onException: (_, state, router) {
+    //   if (state.uri.host == 'bank-callback') return;
+    //   router.go('/home');
+    // },
     routes: [
       GoRoute(path: '/login',    builder: (_, __) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),
@@ -84,15 +107,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/home/category-chart',
         builder: (_, state) => CategoryChartScreen(categoryId: state.extra as String?),
       ),
-      // GoRoute(
-      //   parentNavigatorKey: _rootKey,
-      //   path: '/budgets/add',
-      //   builder: (_, __) => const AddBudgetScreen(),
-      // ),
       GoRoute(
         parentNavigatorKey: _rootKey,
         path: '/budgets/add',
         builder: (_, state) => AddBudgetScreen(budget: state.extra as Budget?),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootKey,
+        path: '/banks/select',
+        builder: (_, __) => const SelectBankScreen(),
       ),
 
       StatefulShellRoute.indexedStack(
@@ -109,42 +132,136 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
 });
 
-class _AppShell extends ConsumerWidget {
+class _AppShell extends ConsumerStatefulWidget {
   final StatefulNavigationShell shell;
   const _AppShell({required this.shell});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends ConsumerState<_AppShell> {
+  StreamSubscription<Uri>? _linkSub;
+  bool _processingCallback = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initDeepLinks());
+  }
+
+  Future<void> _initDeepLinks() async {
+    final appLinks = AppLinks();
+    try {
+      final initial = await appLinks.getInitialLink();
+      if (initial != null) await _handleLink(initial);
+    } catch (_) {}
+    _linkSub = appLinks.uriLinkStream.listen(
+      (uri) => _handleLink(uri),
+      onError: (_) {},
+    );
+  }
+
+  Future<void> _handleLink(Uri uri) async {
+    if (uri.scheme.toLowerCase() != 'categoriseit' || uri.host != 'bank-callback') return;
+    final code = uri.queryParameters['code'];
+    if (code == null || code.isEmpty) return;
+
+    final lastCode = await _storage.read(key: _lastCodeKey);
+    if (code == lastCode) return;
+    await _storage.write(key: _lastCodeKey, value: code);
+
+    _processCallback(code);
+  }
+
+  Future<void> _processCallback(String code) async {
+    if (mounted) setState(() => _processingCallback = true);
+    try {
+      await ref.read(bankConnectionRepositoryProvider).handleCallback(code: code);
+      await ref.read(transactionsMutationProvider.notifier).sync();
+      ref.invalidate(bankConnectionsProvider);
+      if (!mounted) return;
+      setState(() => _processingCallback = false);
+
+      GoRouter.of(context).go('/account');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Bank connected successfully'),
+          backgroundColor: AppColors.emerald,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _processingCallback = false);
+
+      final msg = e is ApiException ? e.message : 'Bank connection failed. Please try again.';
+      GoRouter.of(context).go('/account');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(msg), backgroundColor: AppColors.red),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _linkSub?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final unread = ref.watch(unreadCountProvider);
     final conn   = ref.watch(isConnectedProvider);
 
-    return Scaffold(
-      body: Column(
-        children: [
-          conn.when(
-            data: (connected) => connected
-                ? const SizedBox.shrink()
-                : Container(
-                    color: const Color(0xFFEF4444),
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: const Text(
-                      'No connection to server',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white, fontSize: 12),
-                    ),
-                  ),
-            loading: () => const SizedBox.shrink(),
-            error: (_, __) => const SizedBox.shrink(),
+    return Stack(
+      children: [
+        Scaffold(
+          body: Column(
+            children: [
+              conn.when(
+                data: (connected) => connected
+                    ? const SizedBox.shrink()
+                    : Container(
+                        color: const Color(0xFFEF4444),
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: const Text(
+                          'No connection to server',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white, fontSize: 12),
+                        ),
+                      ),
+                loading: () => const SizedBox.shrink(),
+                error:   (_, __) => const SizedBox.shrink(),
+              ),
+              Expanded(child: widget.shell),
+            ],
           ),
-          Expanded(child: shell),
-        ],
-      ),
-      bottomNavigationBar: AppBottomNav(
-        currentIndex: shell.currentIndex,
-        unreadCount: unread,
-        onTap: (i) => shell.goBranch(i, initialLocation: i == shell.currentIndex),
-      ),
+          bottomNavigationBar: AppBottomNav(
+            currentIndex: widget.shell.currentIndex,
+            unreadCount: unread,
+            onTap: (i) => widget.shell.goBranch(i, initialLocation: i == widget.shell.currentIndex),
+          ),
+        ),
+
+        if (_processingCallback)
+          Container(
+            color: Colors.black.withValues(alpha: 0.6),
+            child: const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(color: AppColors.emerald),
+                  SizedBox(height: 16),
+                  Text(
+                    'Connecting your bank…',
+                    style: TextStyle(color: Colors.white, fontSize: 15),
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

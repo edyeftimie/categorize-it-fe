@@ -33,6 +33,7 @@ class _AuthInterceptor extends Interceptor {
     RequestInterceptorHandler handler,
   ) async {
     final token = await _storage.readToken();
+    print('REQUEST ${options.path}: token=${token != null ? "present" : "NULL"}');
     if (token != null) {
       options.headers['Authorization'] = 'Bearer $token';
     }

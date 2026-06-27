@@ -49,13 +49,14 @@ final Provider<Dio> dioProvider = Provider<Dio>((ref) {
   return DioClient(
     tokenStorage,
     onUnauthorized: () {
+      print('⚠️ onUnauthorized FIRED - forcing logout');  // ← add
       ref.read(authControllerProvider.notifier).forceLogout();
-      ref.invalidate(dashboardProvider);
-      ref.invalidate(transactionsProvider);
-      ref.invalidate(categoriesProvider);
-      ref.invalidate(budgetsProvider);
-      ref.invalidate(recommendationsProvider);
-      ref.invalidate(bankConnectionsProvider);
+      // ref.invalidate(dashboardProvider);
+      // ref.invalidate(transactionsProvider);
+      // ref.invalidate(categoriesProvider);
+      // ref.invalidate(budgetsProvider);
+      // ref.invalidate(recommendationsProvider);
+      // ref.invalidate(bankConnectionsProvider);
     },
   ).dio;
 });
@@ -100,11 +101,13 @@ class AuthController extends StateNotifier<AsyncValue<User?>> {
 
   Future<void> logout() async {
     await _repo.logout();
+    await GoogleSignInService.signOut();
     state = const AsyncValue.data(null);
   }
 
-  // Synchronous — does NOT call backend. Resets state so router redirects to /login.
   void forceLogout() {
+    if (state.valueOrNull == null) return;
+    GoogleSignInService.signOut(); // fire-and-forget, 401 path
     state = const AsyncValue.data(null);
   }
 }
@@ -134,7 +137,7 @@ final transactionRepositoryProvider    = Provider<ITransactionRepository>((ref) 
 final recommendationRepositoryProvider = Provider<IRecommendationRepository>((ref) => RecommendationRepository(ref.read(dioProvider)));
 final budgetRepositoryProvider = Provider<IBudgetRepository>((ref) => BudgetRepository(ref.read(dioProvider)));
 final bankConnectionRepositoryProvider = Provider<IBankConnectionRepository>((ref) => BankConnectionRepository(ref.read(dioProvider)));
-
+final availableBanksProvider = FutureProvider((ref) => ref.read(bankConnectionRepositoryProvider).getAvailableBanks());
 // repos with mock
 // final authRepositoryProvider           = Provider<IAuthRepository>((ref)           => MockAuthRepository());
 // final transactionRepositoryProvider    = Provider<ITransactionRepository>((ref)    => MockTransactionRepository());
@@ -170,7 +173,9 @@ class BudgetsNotifier extends StateNotifier<AsyncValue<List<Budget>>> {
 
   Future<void> _load() async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(_repo.getBudgets);
+    final result = await AsyncValue.guard(_repo.getBudgets);
+    if (!mounted) return;
+    state = result;
   }
 
   Future<void> create({required String categoryId, required double monthlyLimit}) async {
@@ -206,7 +211,9 @@ class RecommendationsNotifier extends StateNotifier<AsyncValue<List<Recommendati
 
   Future<void> _load() async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(_repo.getRecommendations);
+    final result = await AsyncValue.guard(_repo.getRecommendations);
+    if (!mounted) return;
+    state = result;
   }
 
   Future<void> reload() => _load();
