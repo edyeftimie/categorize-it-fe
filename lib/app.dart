@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:app_links/app_links.dart';
+import 'package:categoriseit_fe/presentation/screens/transactions/add_transaction_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -116,6 +117,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootKey,
         path: '/banks/select',
         builder: (_, __) => const SelectBankScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootKey,
+        path: '/transactions/add',
+        builder: (_, __) => const AddTransactionScreen(),
       ),
 
       StatefulShellRoute.indexedStack(

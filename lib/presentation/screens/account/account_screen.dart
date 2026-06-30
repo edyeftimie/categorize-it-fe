@@ -1,10 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:go_router/go_router.dart';
-// import '../../../core/theme/app_colors.dart';
-// import '../../../data/providers.dart';
-// import '../../../domain/models/bank_connection.dart';
-// import '../../../domain/models/user.dart';
 import 'package:categoriseit_fe/domain/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -173,7 +166,7 @@ class _ProfileCard extends StatelessWidget {
               ),
             ],
           ),
-          Positioned(
+          const Positioned(
             top: 0, right: 0,
             child: Icon(Icons.edit_outlined, color: AppColors.textSecondary, size: 18),
           ),

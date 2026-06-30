@@ -1,7 +1,6 @@
 import 'package:categoriseit_fe/core/theme/app_colors.dart';
 import 'package:categoriseit_fe/core/utils/category_utils.dart';
 import 'package:categoriseit_fe/core/utils/format_utils.dart';
-import 'package:categoriseit_fe/data/repositories/mock/mock_data.dart';
 import 'package:categoriseit_fe/data/providers.dart';
 import 'package:categoriseit_fe/domain/models/transaction.dart';
 import 'package:flutter/material.dart';
@@ -81,8 +80,8 @@ class _State extends ConsumerState<CategoryTransactionsScreen> {
                 data: (allTxns) {
                   final current  = _filterByCategory(allTxns);
                   final previous = _filterByCategory(previousAsync.valueOrNull ?? []);
-                  final currentTotal  = current.fold(0.0,  (s, t) => s + t.amount);
-                  final previousTotal = previous.fold(0.0, (s, t) => s + t.amount);
+                  final currentTotal  = current.where((t) => t.isExpense).fold(0.0,  (s, t) => s + t.amount);
+                  final previousTotal = previous.where((t) => t.isExpense).fold(0.0, (s, t) => s + t.amount);
 
                   return ListView(
                     padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
@@ -339,7 +338,10 @@ class _TxnRow extends StatelessWidget {
             ],
           ),
         ),
-        Text('-${formatRonDec(txn.amount)}', style: const TextStyle(color: AppColors.red, fontSize: 13)),
+        Text(
+          txn.isExpense ? '-${formatRonDec(txn.amount)}' : '+${formatRonDec(txn.amount)}',
+          style: TextStyle(color: txn.isExpense ? AppColors.red : AppColors.emerald, fontSize: 13),
+        ),
       ],
     );
   }
