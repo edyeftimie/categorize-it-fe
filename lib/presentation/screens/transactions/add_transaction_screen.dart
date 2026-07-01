@@ -143,7 +143,7 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               const SizedBox(height: 6),
               categoriesAsync.when(
                 loading: () => const LinearProgressIndicator(color: AppColors.emerald),
-                error: (e, _) => Text('Failed to load categories', style: const TextStyle(color: AppColors.red)),
+                error: (e, _) => const Text('Failed to load categories', style: TextStyle(color: AppColors.red)),
                 data: (cats) => Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(12)),

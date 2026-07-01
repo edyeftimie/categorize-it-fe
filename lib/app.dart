@@ -37,7 +37,6 @@ final routerProvider = Provider<GoRouter>((ref) {
   final notifier = _AuthNotifier();
 
   ref.listen<AsyncValue<User?>>(authControllerProvider, (prev, next) {
-    print('AUTH CHANGED: prev=${prev?.valueOrNull?.id}, next=${next.valueOrNull?.id}, isLoading=${next.isLoading}');
     notifier.notify();
   });
 
@@ -63,7 +62,6 @@ final routerProvider = Provider<GoRouter>((ref) {
     refreshListenable: notifier,
     redirect: (context, state) {
       final authAsync = ref.read(authControllerProvider);
-      print('REDIRECT: loc=${state.matchedLocation}, isLoading=${authAsync.isLoading}, authed=${authAsync.valueOrNull != null}');
       if (authAsync.isLoading) return null;
 
       final isAuthenticated = authAsync.valueOrNull != null;

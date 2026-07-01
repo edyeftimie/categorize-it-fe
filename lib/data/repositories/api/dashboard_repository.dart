@@ -32,8 +32,6 @@ class DashboardRepository implements IDashboardRepository {
     }
   }
   
-  CategorySpending _parseCategory(Map<String, dynamic> j) =>
-    CategorySpending.fromJson(j);
 
   MonthlyAmount _parseMonthlyAmount(Map<String, dynamic> j) =>
     MonthlyAmount.fromJson(j);

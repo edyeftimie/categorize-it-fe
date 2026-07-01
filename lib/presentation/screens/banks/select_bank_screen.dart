@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/providers.dart';
@@ -104,7 +103,7 @@ class _SelectBankScreenState extends ConsumerState<SelectBankScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(bank.name, style: const TextStyle(color: Colors.white, fontSize: 14)),
-                                  Text(bank.country, style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                                  Text(bank.country, style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
                                 ],
                               ),
                             ),
@@ -114,7 +113,7 @@ class _SelectBankScreenState extends ConsumerState<SelectBankScreen> {
                                 child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.emerald),
                               )
                             else
-                              Icon(Icons.chevron_right, color: AppColors.textSecondary),
+                              const Icon(Icons.chevron_right, color: AppColors.textSecondary),
                           ],
                         ),
                       ),

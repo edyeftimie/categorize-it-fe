@@ -27,12 +27,12 @@ class _State extends ConsumerState<AccountScreen> {
         title: const Text('Disconnect bank', style: TextStyle(color: Colors.white)),
         content: Text(
           'Remove your ${c.aspspName} connection? Your existing transactions will be kept.',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: const TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () async {
@@ -101,7 +101,7 @@ class _State extends ConsumerState<AccountScreen> {
               data: (user) => _ProfileCard(user: user),
             ),
             const SizedBox(height: 24),
-            Text('CONNECTED BANKS', style: TextStyle(color: AppColors.textMuted, fontSize: 11, letterSpacing: 1.2)),
+            const Text('CONNECTED BANKS', style: TextStyle(color: AppColors.textMuted, fontSize: 11, letterSpacing: 1.2)),
             const SizedBox(height: 10),
             connectionsAsync.when(
               loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
@@ -161,7 +161,7 @@ class _ProfileCard extends StatelessWidget {
                 children: [
                   Text(name,  style: const TextStyle(color: Colors.white, fontSize: 16)),
                   const SizedBox(height: 4),
-                  Text(email, style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                  Text(email, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                 ],
               ),
             ],
@@ -231,7 +231,7 @@ class _ConnectionCard extends StatelessWidget {
                           isActive
                               ? '${connection.bankAccounts.length} accounts · Expires ${connection.validUntil.month}/${connection.validUntil.year}'
                               : 'Reconnect to sync transactions',
-                          style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+                          style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
                         ),
                       ],
                     ),
@@ -296,7 +296,7 @@ class _ExpandedContent extends StatelessWidget {
                 children: [
                   Text(a.name ?? 'Account', style: const TextStyle(color: Colors.white, fontSize: 13)),
                   const SizedBox(height: 2),
-                  Text(a.maskedIban, style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                  Text(a.maskedIban, style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
                 ],
               ),
             ),
@@ -306,11 +306,11 @@ class _ExpandedContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(children: [
-                Icon(Icons.refresh, size: 14, color: AppColors.textMuted),
+                const Icon(Icons.refresh, size: 14, color: AppColors.textMuted),
                 const SizedBox(width: 6),
                 Text(
                   lastSync != null ? 'Last synced: ${_ago(lastSync)}' : 'Never synced',
-                  style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+                  style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
                 ),
               ]),
               GestureDetector(

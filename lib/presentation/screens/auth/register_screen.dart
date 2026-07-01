@@ -5,8 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/providers.dart';
-import '../../../core/services/google_sign_in_service.dart';
-import 'login_screen.dart'; 
 
 
 class RegisterScreen extends ConsumerStatefulWidget {

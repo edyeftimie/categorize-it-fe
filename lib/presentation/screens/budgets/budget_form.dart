@@ -78,12 +78,12 @@ class _BudgetFormState extends ConsumerState<BudgetForm> {
         title: const Text('Delete budget', style: TextStyle(color: Colors.white)),
         content: Text(
           'Delete budget for ${budget.categoryName}?',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: const TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text('Cancel', style: TextStyle(color: AppColors.textMuted)),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.textMuted)),
           ),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
@@ -113,7 +113,7 @@ class _BudgetFormState extends ConsumerState<BudgetForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Category', style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
+        const Text('Category', style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
         const SizedBox(height: 8),
         if (_isEditMode)
           _LockedCategory(budget: widget.existingBudget!)
@@ -128,7 +128,7 @@ class _BudgetFormState extends ConsumerState<BudgetForm> {
             ),
           ),
         const SizedBox(height: 20),
-        Text('Monthly limit', style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
+        const Text('Monthly limit', style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
         const SizedBox(height: 8),
         _AmountField(
           controller: _amountController,
@@ -195,13 +195,13 @@ class _LockedCategory extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8)),
             child: Icon(icon, color: color, size: 18),
           ),
           const SizedBox(width: 10),
           Text(budget.categoryName, style: const TextStyle(color: Colors.white)),
           const Spacer(),
-          Icon(Icons.lock_outline, color: AppColors.textMuted, size: 16),
+          const Icon(Icons.lock_outline, color: AppColors.textMuted, size: 16),
         ],
       ),
     );
@@ -231,7 +231,7 @@ class _CategoryPicker extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: CategoryUtils.colorFromHex(selected!.color).withOpacity(0.15),
+                  color: CategoryUtils.colorFromHex(selected!.color).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(CategoryUtils.iconFromName(selected!.icon), color: CategoryUtils.colorFromHex(selected!.color), size: 18),
@@ -239,9 +239,9 @@ class _CategoryPicker extends StatelessWidget {
               const SizedBox(width: 10),
               Text(selected!.name, style: const TextStyle(color: Colors.white)),
             ] else
-              Text('Select a category', style: TextStyle(color: AppColors.textMuted)),
+              const Text('Select a category', style: TextStyle(color: AppColors.textMuted)),
             const Spacer(),
-            Icon(Icons.keyboard_arrow_down, color: AppColors.textMuted),
+            const Icon(Icons.keyboard_arrow_down, color: AppColors.textMuted),
           ],
         ),
       ),
@@ -260,7 +260,7 @@ class _CategoryPicker extends StatelessWidget {
           return ListTile(
             leading: Container(
               padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(8)),
+              decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8)),
               child: Icon(CategoryUtils.iconFromName(cat.icon), color: color, size: 18),
             ),
             title: Text(cat.name, style: const TextStyle(color: Colors.white)),
@@ -297,7 +297,7 @@ class _AmountField extends StatelessWidget {
               child: Row(children: [
                 Text(currency, style: const TextStyle(color: Colors.white)),
                 const SizedBox(width: 4),
-                Icon(Icons.keyboard_arrow_down, color: AppColors.textMuted, size: 16),
+                const Icon(Icons.keyboard_arrow_down, color: AppColors.textMuted, size: 16),
               ]),
             ),
           ),

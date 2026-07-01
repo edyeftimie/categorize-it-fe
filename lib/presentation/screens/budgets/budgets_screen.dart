@@ -156,7 +156,7 @@ class _BudgetCard extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
+                  decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
                   child: Icon(icon, color: color, size: 20),
                 ),
                 const SizedBox(width: 12),
@@ -182,8 +182,8 @@ class _BudgetCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('${formatRon(budget.spent)} spent', style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
-                Text('${formatRon(budget.monthlyLimit)} limit', style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
+                Text('${formatRon(budget.spent)} spent', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
+                Text('${formatRon(budget.monthlyLimit)} limit', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
               ],
             ),
           ],
