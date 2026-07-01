@@ -33,26 +33,34 @@ class InsightsScreen extends ConsumerWidget {
               child: async.when(
                 loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
                 error: (e, _) => Center(child: Text('$e')),
-                data: (recs) => ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                  itemCount: recs.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (ctx, i) {
-                    final rec = recs[i];
-                    return Dismissible(
-                      key: Key(rec.id),
-                      direction: DismissDirection.endToStart,
-                      onDismissed: (_) => ref.read(recommendationsProvider.notifier).dismiss(rec.id),
-                      background: Container(
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 20),
-                        decoration: BoxDecoration(color: AppColors.red.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(16)),
-                        child: const Icon(Icons.delete_outline, color: AppColors.red),
-                      ),
-                      child: _RecCard(rec: rec, onRead: () => ref.read(recommendationsProvider.notifier).markAsRead(rec.id)),
-                    );
+                data: (recs) => RefreshIndicator(
+                  color: AppColors.emerald,                       // ADDED
+                  backgroundColor: AppColors.surface,             // ADDED
+                  onRefresh: () async {                           // ADDED: reload recommendations (StateNotifier)
+                    await ref.read(recommendationsProvider.notifier).reload();
                   },
-                ),
+                  child: ListView.separated(
+                    physics: const AlwaysScrollableScrollPhysics(),  // ADDED: allow pull-to-refresh even when list is not scrollable
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                    itemCount: recs.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (ctx, i) {
+                      final rec = recs[i];
+                      return Dismissible(
+                        key: Key(rec.id),
+                        direction: DismissDirection.endToStart,
+                        onDismissed: (_) => ref.read(recommendationsProvider.notifier).dismiss(rec.id),
+                        background: Container(
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 20),
+                          decoration: BoxDecoration(color: AppColors.red.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(16)),
+                          child: const Icon(Icons.delete_outline, color: AppColors.red),
+                        ),
+                        child: _RecCard(rec: rec, onRead: () => ref.read(recommendationsProvider.notifier).markAsRead(rec.id)),
+                      );
+                    },
+                  ),
+                )
               ),
             ),
           ],

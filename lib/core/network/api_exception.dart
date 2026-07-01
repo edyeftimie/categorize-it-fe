@@ -11,7 +11,6 @@ class ApiException implements Exception {
     this.isUnauthorized = false,
   });
 
-  /// Convenience: extract from a DioException after the error interceptor has run.
   static ApiException fromDioException(DioException e) {
     if (e.error is ApiException) return e.error as ApiException;
     if (e.type == DioExceptionType.connectionTimeout ||

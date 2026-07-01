@@ -83,39 +83,49 @@ class _State extends ConsumerState<CategoryTransactionsScreen> {
                   final currentTotal  = current.where((t) => t.isExpense).fold(0.0,  (s, t) => s + t.amount);
                   final previousTotal = previous.where((t) => t.isExpense).fold(0.0, (s, t) => s + t.amount);
 
-                  return ListView(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                    children: [
-                      _TotalBanner(
-                        total: currentTotal,
-                        previousTotal: previousTotal,
-                        onChart: () => context.push('/home/category-chart', extra: _categoryId),
-                      ),
-                      const SizedBox(height: 12),
+                  return RefreshIndicator(
+                    color: AppColors.emerald,                       // ADDED
+                    backgroundColor: AppColors.surface,             // ADDED
+                    onRefresh: () async {                           // ADDED: invalidate + await both month providers
+                      ref.invalidate(currentMonthTransactionsProvider);
+                      ref.invalidate(previousMonthTransactionsProvider);
+                      ref.invalidate(categoriesProvider);
+                      await ref.read(currentMonthTransactionsProvider.future);
+                    },
+                    child: ListView(
+                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                      children: [
+                        _TotalBanner(
+                          total: currentTotal,
+                          previousTotal: previousTotal,
+                          onChart: () => context.push('/home/category-chart', extra: _categoryId),
+                        ),
+                        const SizedBox(height: 12),
 
-                      // Current month box
-                      _TxnBox(
-                        title:      'This month',
-                        subtitle:   '${current.length} transactions',
-                        total:      currentTotal,
-                        showTotal:  false,
-                        transactions: current,
-                        showAll:    _showAllCurrent,
-                        onToggle:   () => setState(() => _showAllCurrent = !_showAllCurrent),
-                      ),
-                      const SizedBox(height: 12),
+                        // Current month box
+                        _TxnBox(
+                          title:      'This month',
+                          subtitle:   '${current.length} transactions',
+                          total:      currentTotal,
+                          showTotal:  false,
+                          transactions: current,
+                          showAll:    _showAllCurrent,
+                          onToggle:   () => setState(() => _showAllCurrent = !_showAllCurrent),
+                        ),
+                        const SizedBox(height: 12),
 
-                      // Previous month box
-                      _TxnBox(
-                        title:      'Previous month',
-                        subtitle:   '$prevMonthName • ${previous.length} transactions',
-                        total:      previousTotal,
-                        showTotal:  true,
-                        transactions: previous,
-                        showAll:    _showAllPrevious,
-                        onToggle:   () => setState(() => _showAllPrevious = !_showAllPrevious),
-                      ),
-                    ],
+                        // Previous month box
+                        _TxnBox(
+                          title:      'Previous month',
+                          subtitle:   '$prevMonthName • ${previous.length} transactions',
+                          total:      previousTotal,
+                          showTotal:  true,
+                          transactions: previous,
+                          showAll:    _showAllPrevious,
+                          onToggle:   () => setState(() => _showAllPrevious = !_showAllPrevious),
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),
@@ -160,6 +170,7 @@ class _CategoryDropdown extends StatelessWidget {
         backgroundColor: AppColors.surface,
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
         builder: (_) => ListView(
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(vertical: 12),
           children: [
             ListTile(

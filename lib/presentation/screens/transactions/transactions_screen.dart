@@ -74,13 +74,22 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen> {
                     ? txns
                     : txns.where((t) => (t.merchantName ?? '').toLowerCase().contains(_query) || (t.categoryName ?? '').toLowerCase().contains(_query)).toList();
                   final grouped = _groupByDate(filtered);
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    itemCount: grouped.length,
-                    itemBuilder: (context, i) {
-                      final entry = grouped[i];
-                      return _DateGroup(label: entry.key, transactions: entry.value);
+                  return RefreshIndicator(
+                    color: AppColors.emerald,
+                    backgroundColor: AppColors.surface,
+                    onRefresh: () async {
+                      ref.invalidate(transactionsProvider);
+                      await ref.read(transactionsProvider.future);
                     },
+                    child: ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      itemCount: grouped.length,
+                      itemBuilder: (context, i) {
+                        final entry = grouped[i];
+                        return _DateGroup(label: entry.key, transactions: entry.value);
+                      },
+                    )
                   );
                 },
               ),

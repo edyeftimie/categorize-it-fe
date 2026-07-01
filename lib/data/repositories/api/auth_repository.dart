@@ -7,8 +7,6 @@ import '../../../domain/models/user.dart';
 import '../../../domain/repositories/i_auth_repository.dart';
 
 class ApiAuthRepository implements IAuthRepository {
-  // Verify these against your backend controllers.
-  // Backend docs show /api/authentication/...; change to /api/auth/... if needed.
   static const _loginPath       = '/api/authentication/login';
   static const _registerPath    = '/api/authentication/register';
   static const _googleLoginPath = '/api/authentication/google-login';

@@ -53,50 +53,59 @@ class AllCategoriesScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 16),
                 Expanded(
-                  child: ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                    itemCount: cats.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 10),
-                    itemBuilder: (context, i) {
-                      final c     = cats[i];
-                      final color = CategoryUtils.colorFromHex(c.categoryColor);
-                      final icon  = CategoryUtils.iconFromName(c.categoryIcon);
-                      return GestureDetector(
-                        onTap: () => context.push('/home/category-transactions', extra: c.categoryId),
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16)),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
-                                    child: Icon(icon, color: color, size: 20),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(child: Text(c.categoryName, style: const TextStyle(color: Colors.white, fontSize: 14))),
-                                  Text(formatRon(c.amount), style: const TextStyle(color: Colors.white, fontSize: 14)),
-                                ],
-                              ),
-                              if (c.amount > 0) ...[
-                                const SizedBox(height: 10),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(3),
-                                  child: LinearProgressIndicator(
-                                    value: (c.percentage / 100).clamp(0.0, 1.0),
-                                    minHeight: 5,
-                                    backgroundColor: AppColors.divider,
-                                    valueColor: AlwaysStoppedAnimation(color),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      );
+                  child: RefreshIndicator(
+                    color: AppColors.emerald,                     // ADDED
+                    backgroundColor: AppColors.surface,           // ADDED
+                    onRefresh: () async {                         // ADDED: refetch the dashboard (drives this screen)
+                      ref.invalidate(dashboardProvider);
+                      await ref.read(dashboardProvider.future);
                     },
+                    child: ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),  // ADDED: allow pull-to-refresh even when list is not scrollable
+                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                      itemCount: cats.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 10),
+                      itemBuilder: (context, i) {
+                        final c     = cats[i];
+                        final color = CategoryUtils.colorFromHex(c.categoryColor);
+                        final icon  = CategoryUtils.iconFromName(c.categoryIcon);
+                        return GestureDetector(
+                          onTap: () => context.push('/home/category-transactions', extra: c.categoryId),
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16)),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
+                                      child: Icon(icon, color: color, size: 20),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(child: Text(c.categoryName, style: const TextStyle(color: Colors.white, fontSize: 14))),
+                                    Text(formatRon(c.amount), style: const TextStyle(color: Colors.white, fontSize: 14)),
+                                  ],
+                                ),
+                                if (c.amount > 0) ...[
+                                  const SizedBox(height: 10),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(3),
+                                    child: LinearProgressIndicator(
+                                      value: (c.percentage / 100).clamp(0.0, 1.0),
+                                      minHeight: 5,
+                                      backgroundColor: AppColors.divider,
+                                      valueColor: AlwaysStoppedAnimation(color),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ],

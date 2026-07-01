@@ -53,7 +53,6 @@ class DashboardData {
   final double totalExpenses;
   final List<CategorySpending> categoryBreakdown;
   final NeedWantSplit needWantSplit;
-  // Not returned by the API; set by the caller if needed (e.g. from the query params used).
   final DateTime? month;
 
   const DashboardData({

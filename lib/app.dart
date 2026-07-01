@@ -26,7 +26,6 @@ import 'presentation/widgets/app_bottom_nav.dart';
 
 final _rootKey = GlobalKey<NavigatorState>();
 
-// Bridges Riverpod auth state into GoRouter's refreshListenable.
 class _AuthNotifier extends ChangeNotifier {
   void notify() => notifyListeners();
 }
@@ -41,10 +40,6 @@ final routerProvider = Provider<GoRouter>((ref) {
     print('AUTH CHANGED: prev=${prev?.valueOrNull?.id}, next=${next.valueOrNull?.id}, isLoading=${next.isLoading}');
     notifier.notify();
   });
-
-  // ref.listen<AsyncValue<User?>>(authControllerProvider, (_, __) {
-  //   Future.microtask(() => notifier.notify());
-  // });
 
   ref.listen<AsyncValue<User?>>(
     authControllerProvider,
@@ -70,9 +65,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       final authAsync = ref.read(authControllerProvider);
       print('REDIRECT: loc=${state.matchedLocation}, isLoading=${authAsync.isLoading}, authed=${authAsync.valueOrNull != null}');
       if (authAsync.isLoading) return null;
-    // redirect: (context, state) {
-    //   final authAsync = ref.read(authControllerProvider);
-    //   if (authAsync.isLoading) return null;
 
       final isAuthenticated = authAsync.valueOrNull != null;
       final loc = state.matchedLocation;
@@ -85,10 +77,6 @@ final routerProvider = Provider<GoRouter>((ref) {
     onException: (_, state, router) {
       if (state.uri.scheme.toLowerCase() == 'categoriseit') return;
     },
-    // onException: (_, state, router) {
-    //   if (state.uri.host == 'bank-callback') return;
-    //   router.go('/home');
-    // },
     routes: [
       GoRoute(path: '/login',    builder: (_, __) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),

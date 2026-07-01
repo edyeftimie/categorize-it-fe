@@ -19,7 +19,7 @@ class BudgetsScreen extends ConsumerWidget {
         child: async.when(
           loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
           error: (e, _) => Center(child: Text('$e')),
-          data: (budgets) => _Body(budgets: budgets),
+          data: (budgets) => _Body(budgets: budgets, ref: ref),
         ),
       ),
     );
@@ -28,7 +28,8 @@ class BudgetsScreen extends ConsumerWidget {
 
 class _Body extends StatelessWidget {
   final List<Budget> budgets;
-  const _Body({required this.budgets});
+  final WidgetRef ref;
+  const _Body({required this.budgets, required this.ref});
 
   @override
   Widget build(BuildContext context) {
@@ -36,38 +37,47 @@ class _Body extends StatelessWidget {
     final totalSpent = budgets.fold(0.0, (s, b) => s + b.spent);
     final overallPct = totalLimit > 0 ? totalSpent / totalLimit : 0.0;
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Budgets', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w500)),
-                const SizedBox(height: 2),
-                Text(formatMonthYear(DateTime.now()), style: const TextStyle(color: AppColors.textMuted, fontSize: 14)),
-              ],
-            ),
-            GestureDetector(
-              onTap: () => context.push('/budgets/add'),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(color: AppColors.emerald, shape: BoxShape.circle),
-                child: const Icon(Icons.add, color: Colors.white, size: 20),
+    return RefreshIndicator(
+      color: AppColors.emerald,                           // ADDED
+      backgroundColor: AppColors.surface,                 // ADDED
+      onRefresh: () async {                               // ADDED: reload budgets (StateNotifier) + dashboard
+        await ref.read(budgetsProvider.notifier).reload();
+        ref.invalidate(dashboardProvider);
+      },
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),      // ADDED: allow pull-to-refresh even when list is not scrollable
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Budgets', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w500)),
+                  const SizedBox(height: 2),
+                  Text(formatMonthYear(DateTime.now()), style: const TextStyle(color: AppColors.textMuted, fontSize: 14)),
+                ],
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
-        _OverviewCard(totalLimit: totalLimit, totalSpent: totalSpent, overallPct: overallPct.clamp(0.0, 1.0)),
-        const SizedBox(height: 16),
-        ...budgets.map((b) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: _BudgetCard(budget: b),
-        )),
-      ],
+              GestureDetector(
+                onTap: () => context.push('/budgets/add'),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: const BoxDecoration(color: AppColors.emerald, shape: BoxShape.circle),
+                  child: const Icon(Icons.add, color: Colors.white, size: 20),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          _OverviewCard(totalLimit: totalLimit, totalSpent: totalSpent, overallPct: overallPct.clamp(0.0, 1.0)),
+          const SizedBox(height: 16),
+          ...budgets.map((b) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _BudgetCard(budget: b),
+          )),
+        ],
+      ),
     );
   }
 }

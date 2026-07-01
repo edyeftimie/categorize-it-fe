@@ -17,7 +17,6 @@ class BankAccount {
     this.lastSyncedAt,
   });
 
-  // Shows masked IBAN when available, falls back to name or a placeholder.
   String get maskedIban {
     if (iban != null && iban!.length >= 8) {
       return '${iban!.substring(0, 8)} •••• ${iban!.substring(iban!.length - 4)}';

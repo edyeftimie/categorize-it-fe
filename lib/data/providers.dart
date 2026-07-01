@@ -49,14 +49,7 @@ final Provider<Dio> dioProvider = Provider<Dio>((ref) {
   return DioClient(
     tokenStorage,
     onUnauthorized: () {
-      print('⚠️ onUnauthorized FIRED - forcing logout');  // ← add
       ref.read(authControllerProvider.notifier).forceLogout();
-      // ref.invalidate(dashboardProvider);
-      // ref.invalidate(transactionsProvider);
-      // ref.invalidate(categoriesProvider);
-      // ref.invalidate(budgetsProvider);
-      // ref.invalidate(recommendationsProvider);
-      // ref.invalidate(bankConnectionsProvider);
     },
   ).dio;
 });
@@ -107,7 +100,7 @@ class AuthController extends StateNotifier<AsyncValue<User?>> {
 
   void forceLogout() {
     if (state.valueOrNull == null) return;
-    GoogleSignInService.signOut(); // fire-and-forget, 401 path
+    GoogleSignInService.signOut();
     state = const AsyncValue.data(null);
   }
 }
@@ -116,11 +109,6 @@ final googleSignInServiceProvider = Provider<GoogleSignInService>(
   (ref) => GoogleSignInService(),
 );
 
-// final authControllerProvider = StateNotifierProvider<AuthController, AsyncValue<User?>>(
-//   (ref) => AuthController(
-//     ref.read(authRepositoryProvider),
-//   ),
-// );
 final StateNotifierProvider<AuthController, AsyncValue<User?>> authControllerProvider =
   StateNotifierProvider<AuthController, AsyncValue<User?>>(
     (ref) => AuthController(ref.read(authRepositoryProvider)),
@@ -177,6 +165,8 @@ class BudgetsNotifier extends StateNotifier<AsyncValue<List<Budget>>> {
     if (!mounted) return;
     state = result;
   }
+
+  Future<void> reload() => _load();
 
   Future<void> create({required String categoryId, required double monthlyLimit}) async {
     final b = await _repo.createBudget(categoryId: categoryId, monthlyLimit: monthlyLimit);
