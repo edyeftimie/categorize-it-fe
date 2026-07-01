@@ -30,7 +30,6 @@ class TransactionRepository implements ITransactionRepository {
 
       final r = await _dio.get<dynamic>('/api/transactions', queryParameters: params);
 
-      // Backend may return a bare list or a paginated wrapper { items: [...], totalCount: int }
       final List<dynamic> raw;
       if (r.data is List) {
         raw = r.data as List<dynamic>;
@@ -69,7 +68,6 @@ class TransactionRepository implements ITransactionRepository {
       final r = await _dio.post<Map<String, dynamic>>('/api/transactions', data: body);
       final id = r.data!['id'] as String;
 
-      // API returns only { id }; construct from known fields.
       return Transaction(
         id: id,
         amount: amount,

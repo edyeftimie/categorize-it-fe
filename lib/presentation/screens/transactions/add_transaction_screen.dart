@@ -119,7 +119,6 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
                 const SizedBox(height: 16),
               ],
 
-              // Expense / Income toggle
               Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(12)),

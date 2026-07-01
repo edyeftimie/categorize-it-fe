@@ -35,13 +35,9 @@ class BudgetRepository implements IBudgetRepository {
         },
       );
       final id = r.data!['id'] as String;
-      // POST returns only { id }. Refetch to get the full populated Budget
-      // (categoryName/icon/color/amountSpent come from the server).
       final all = await getBudgets();
       return all.firstWhere((b) => b.id == id);
     } on DioException catch (e) {
-      // 409 Conflict message ("A budget for this category already exists.")
-      // is extracted from the response body by ApiException.fromDioException.
       throw ApiException.fromDioException(e);
     }
   }
@@ -53,7 +49,6 @@ class BudgetRepository implements IBudgetRepository {
         '/api/budgets/$id',
         data: {'monthlyLimit': monthlyLimit},
       );
-      // PUT returns 204. Refetch to return the current server state.
       final all = await getBudgets();
       return all.firstWhere((b) => b.id == id);
     } on DioException catch (e) {

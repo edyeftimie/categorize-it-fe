@@ -114,7 +114,6 @@ final StateNotifierProvider<AuthController, AsyncValue<User?>> authControllerPro
     (ref) => AuthController(ref.read(authRepositoryProvider)),
   );
 
-// repos with api
 final authRepositoryProvider = Provider<IAuthRepository>((ref) => ApiAuthRepository(
   dio: ref.read(dioProvider),
   tokenStorage: ref.read(tokenStorageProvider),
@@ -134,7 +133,6 @@ final availableBanksProvider = FutureProvider((ref) => ref.read(bankConnectionRe
 // final recommendationRepositoryProvider = Provider<IRecommendationRepository>((ref) => MockRecommendationRepository());
 // final bankConnectionRepositoryProvider = Provider<IBankConnectionRepository>((ref) => MockBankConnectionRepository());
 // final dashboardRepositoryProvider      = Provider<IDashboardRepository>((ref)      => MockDashboardRepository());
-
 // final currentUserProvider = FutureProvider<User?>((ref) => ref.read(authRepositoryProvider).getCurrentUser());
 final dashboardProvider  = FutureProvider<DashboardData>((ref) => ref.read(dashboardRepositoryProvider).getDashboard());
 final categoriesProvider = FutureProvider((ref) => ref.read(categoryRepositoryProvider).getCategories());
@@ -230,8 +228,8 @@ class TransactionsMutationNotifier extends StateNotifier<AsyncValue<void>> {
     _ref.invalidate(recommendationsProvider);
     _ref.invalidate(dashboardProvider);
     _ref.invalidate(transactionsProvider);
-    _ref.invalidate(currentMonthTransactionsProvider);   // ← add
-    _ref.invalidate(previousMonthTransactionsProvider);  // ← add
+    _ref.invalidate(currentMonthTransactionsProvider);  
+    _ref.invalidate(previousMonthTransactionsProvider); 
     _ref.invalidate(budgetsProvider);
   }
 

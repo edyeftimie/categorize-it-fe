@@ -36,7 +36,6 @@ class ApiAuthRepository implements IAuthRepository {
 
   @override
   Future<void> logout() async{
-    // await GoogleSignInService.signOut();
     await _tokenStorage.clearAll();
   }
 

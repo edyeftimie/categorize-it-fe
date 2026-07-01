@@ -34,7 +34,6 @@ class Recommendation {
     required this.createdAt,
   });
 
-  // Backend: 3=High, 2=Medium, 1=Low
   bool get isHigh   => priority == 3;
   bool get isMedium => priority == 2;
   bool get isLow    => priority == 1;

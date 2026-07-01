@@ -102,7 +102,6 @@ class AuthGoogleButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Simple "G" icon — replace with an SVG asset if you add one
             Container(
               width: 20, height: 20,
               decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),

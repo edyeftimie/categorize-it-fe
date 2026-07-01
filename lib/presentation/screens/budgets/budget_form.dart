@@ -176,8 +176,6 @@ class _BudgetFormState extends ConsumerState<BudgetForm> {
   }
 }
 
-// ── Private widgets ───────────────────────────────────────────────────────────
-
 class _LockedCategory extends StatelessWidget {
   final Budget budget;
   const _LockedCategory({required this.budget});

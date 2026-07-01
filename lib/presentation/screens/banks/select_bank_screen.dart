@@ -30,8 +30,6 @@ class _SelectBankScreenState extends ConsumerState<SelectBankScreen> {
           const SnackBar(content: Text('Could not open browser'), backgroundColor: AppColors.red),
         );
       }
-      // Stay on picker — deep link will trigger when the user completes consent.
-      // If they press Back in the browser, they return here and can retry.
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

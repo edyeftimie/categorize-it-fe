@@ -38,14 +38,14 @@ class _Body extends StatelessWidget {
     final overallPct = totalLimit > 0 ? totalSpent / totalLimit : 0.0;
 
     return RefreshIndicator(
-      color: AppColors.emerald,                           // ADDED
-      backgroundColor: AppColors.surface,                 // ADDED
-      onRefresh: () async {                               // ADDED: reload budgets (StateNotifier) + dashboard
+      color: AppColors.emerald, 
+      backgroundColor: AppColors.surface,  
+      onRefresh: () async {               
         await ref.read(budgetsProvider.notifier).reload();
         ref.invalidate(dashboardProvider);
       },
       child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(),      // ADDED: allow pull-to-refresh even when list is not scrollable
+        physics: const AlwaysScrollableScrollPhysics(), 
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
         children: [
           Row(
@@ -145,8 +145,8 @@ class _BudgetCard extends StatelessWidget {
         ? (AppColors.yellow, AppColors.yellowSubtle)
         : (AppColors.emerald, AppColors.emeraldSubtle);
 
-    return GestureDetector(                                          // ← add
-      onTap: () => context.push('/budgets/add', extra: budget),     // ← add
+    return GestureDetector(                                    
+      onTap: () => context.push('/budgets/add', extra: budget),  
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(16)),
@@ -188,7 +188,7 @@ class _BudgetCard extends StatelessWidget {
             ),
           ],
         ),
-      ),                                                             // ← close GestureDetector
+      ),                                                 
     );
   }
 }

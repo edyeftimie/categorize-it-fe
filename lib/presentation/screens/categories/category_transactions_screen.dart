@@ -84,9 +84,9 @@ class _State extends ConsumerState<CategoryTransactionsScreen> {
                   final previousTotal = previous.where((t) => t.isExpense).fold(0.0, (s, t) => s + t.amount);
 
                   return RefreshIndicator(
-                    color: AppColors.emerald,                       // ADDED
-                    backgroundColor: AppColors.surface,             // ADDED
-                    onRefresh: () async {                           // ADDED: invalidate + await both month providers
+                    color: AppColors.emerald,            
+                    backgroundColor: AppColors.surface,   
+                    onRefresh: () async {                   
                       ref.invalidate(currentMonthTransactionsProvider);
                       ref.invalidate(previousMonthTransactionsProvider);
                       ref.invalidate(categoriesProvider);
@@ -102,7 +102,6 @@ class _State extends ConsumerState<CategoryTransactionsScreen> {
                         ),
                         const SizedBox(height: 12),
 
-                        // Current month box
                         _TxnBox(
                           title:      'This month',
                           subtitle:   '${current.length} transactions',
@@ -114,7 +113,6 @@ class _State extends ConsumerState<CategoryTransactionsScreen> {
                         ),
                         const SizedBox(height: 12),
 
-                        // Previous month box
                         _TxnBox(
                           title:      'Previous month',
                           subtitle:   '$prevMonthName • ${previous.length} transactions',
@@ -150,8 +148,6 @@ class _State extends ConsumerState<CategoryTransactionsScreen> {
     return months[month.clamp(1, 12)];
   }
 }
-
-// ── Widgets ──────────────────────────────────────────────────────────────────
 
 class _CategoryDropdown extends StatelessWidget {
   final List categories;

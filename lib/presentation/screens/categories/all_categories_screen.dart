@@ -54,14 +54,14 @@ class AllCategoriesScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
                 Expanded(
                   child: RefreshIndicator(
-                    color: AppColors.emerald,                     // ADDED
-                    backgroundColor: AppColors.surface,           // ADDED
-                    onRefresh: () async {                         // ADDED: refetch the dashboard (drives this screen)
+                    color: AppColors.emerald,                 
+                    backgroundColor: AppColors.surface,       
+                    onRefresh: () async {                      
                       ref.invalidate(dashboardProvider);
                       await ref.read(dashboardProvider.future);
                     },
                     child: ListView.separated(
-                      physics: const AlwaysScrollableScrollPhysics(),  // ADDED: allow pull-to-refresh even when list is not scrollable
+                      physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
                       itemCount: cats.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 10),

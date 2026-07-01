@@ -34,13 +34,13 @@ class InsightsScreen extends ConsumerWidget {
                 loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
                 error: (e, _) => Center(child: Text('$e')),
                 data: (recs) => RefreshIndicator(
-                  color: AppColors.emerald,                       // ADDED
-                  backgroundColor: AppColors.surface,             // ADDED
-                  onRefresh: () async {                           // ADDED: reload recommendations (StateNotifier)
+                  color: AppColors.emerald,                 
+                  backgroundColor: AppColors.surface,           
+                  onRefresh: () async {                    
                     await ref.read(recommendationsProvider.notifier).reload();
                   },
                   child: ListView.separated(
-                    physics: const AlwaysScrollableScrollPhysics(),  // ADDED: allow pull-to-refresh even when list is not scrollable
+                    physics: const AlwaysScrollableScrollPhysics(),  
                     padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
                     itemCount: recs.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 12),

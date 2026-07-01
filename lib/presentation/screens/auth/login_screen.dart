@@ -5,7 +5,7 @@ import '../../../core/network/api_exception.dart';
 import '../../../core/services/google_sign_in_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/providers.dart';
-import '../../widgets/auth_widgets.dart'; // AuthLabel, AuthTextField, AuthPrimaryButton, AuthGoogleButton
+import '../../widgets/auth_widgets.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -38,7 +38,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     setState(() { _loading = true; _error = null; });
     try {
       await ref.read(authControllerProvider.notifier).login(email: email, password: pass);
-      // GoRouter redirect handles navigation on success.
     } on ApiException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
@@ -72,7 +71,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 64),
-              // Logo / title
               Center(
                 child: Container(
                   width: 64, height: 64,
@@ -96,7 +94,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 40),
 
-              // Error banner
               if (_error != null) ...[
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -110,7 +107,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 16),
               ],
 
-              // Email
               const AuthLabel('Email'),
               const SizedBox(height: 6),
               AuthTextField(
@@ -120,7 +116,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Password
               const AuthLabel('Password'),
               const SizedBox(height: 6),
               AuthTextField(
@@ -135,7 +130,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 28),
 
-              // Sign In button
               AuthPrimaryButton(
                 label: 'Sign In',
                 loading: _loading,
@@ -143,7 +137,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 16),
 
-              // OR divider
               const Row(children: [
                 Expanded(child: Divider(color: AppColors.border)),
                 Padding(
@@ -154,11 +147,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ]),
               const SizedBox(height: 16),
 
-              // Google Sign-In
               AuthGoogleButton(loading: _loading, onTap: _googleSignIn),
               const SizedBox(height: 32),
 
-              // Register link
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 const Text("Don't have an account? ",
                     style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),

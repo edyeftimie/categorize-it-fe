@@ -6,7 +6,6 @@ class MockTransactionRepository implements ITransactionRepository {
   final _transactions = List<Transaction>.from(MockData.transactions);
 
   @override
-  // Future<List<Transaction>> getTransactions({DateTime? dateFrom, DateTime? dateTo, String? categoryId, String? bankAccountId}) async {
   Future<List<Transaction>> getTransactions({
     String? search,
     String? categoryId,

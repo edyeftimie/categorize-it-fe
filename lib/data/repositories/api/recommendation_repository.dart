@@ -10,7 +10,6 @@ class RecommendationRepository implements IRecommendationRepository {
   @override
   Future<List<Recommendation>> getRecommendations() async {
     try {
-      // includeRead=true so list shows read+unread; excludes dismissed.
       final r = await _dio.get<List<dynamic>>(
         '/api/recommendations',
         queryParameters: {'includeRead': true, 'includeDismissed': false},

@@ -6,7 +6,7 @@ import '../../../core/network/api_exception.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/providers.dart';
 import '../../../core/services/google_sign_in_service.dart';
-import 'login_screen.dart'; // reuses AuthLabel, AuthTextField, AuthPrimaryButton
+import 'login_screen.dart'; 
 
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -58,7 +58,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       await ref.read(authControllerProvider.notifier).register(
         email: email, password: pass, name: name,
       );
-      // GoRouter redirect handles navigation on success.
     } on ApiException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {

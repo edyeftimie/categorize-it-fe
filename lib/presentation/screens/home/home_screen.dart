@@ -24,7 +24,7 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class _Body extends StatefulWidget {                       // CHANGED: StatelessWidget → StatefulWidget
+class _Body extends StatefulWidget {                     
   final DashboardData data;
   final WidgetRef ref;
   const _Body({required this.data, required this.ref});
@@ -34,11 +34,11 @@ class _Body extends StatefulWidget {                       // CHANGED: Stateless
 }
 
 class _BodyState extends State<_Body> {
-  bool _showSplit = false;                                 // ADDED: toggle state
+  bool _showSplit = false;                              
 
   @override
   Widget build(BuildContext context) {
-    final data = widget.data;                              // convenience
+    final data = widget.data;                          
     final user = widget.ref.watch(authControllerProvider).valueOrNull;
     final displayName = (user?.username?.trim().isNotEmpty ?? false)
       ? user!.username?.trim() : 'there';
@@ -62,14 +62,12 @@ class _BodyState extends State<_Body> {
             Text('$displayName 👋', style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w500)),
             const SizedBox(height: 16),
 
-            // Tap the balance card to toggle the 50/30/20 panel
-            GestureDetector(                                // ADDED: wrap balance card to make it tappable
+            GestureDetector(               
               onTap: () => setState(() => _showSplit = !_showSplit),
               child: _BalanceCard(data: data),
             ),
 
-            // 50/30/20 panel — only visible when toggled on
-            if (_showSplit) ...[                            // ADDED: conditional panel
+            if (_showSplit) ...[        
               const SizedBox(height: 16),
               _NeedWantSavingsCard(data: data),
             ],
@@ -136,10 +134,8 @@ class _NeedWantSavingsCard extends StatelessWidget {
     final income  = data.totalIncome;
     final need    = data.needWantSplit.need;
     final want    = data.needWantSplit.want;
-    // Savings = what's left of income after spending; never negative.
     final savings = (income - data.totalExpenses).clamp(0.0, double.infinity);
 
-    // Percentages of INCOME (this is what 50/30/20 actually means).
     double pct(double v) => income > 0 ? (v / income * 100) : 0;
     final needPct    = pct(need);
     final wantPct    = pct(want);
@@ -156,7 +152,6 @@ class _NeedWantSavingsCard extends StatelessWidget {
           const Text('Share of this month\'s income', style: TextStyle(color: AppColors.textMuted, fontSize: 12)),
           const SizedBox(height: 16),
 
-          // Stacked proportion bar (of income)
           ClipRRect(
             borderRadius: BorderRadius.circular(6),
             child: SizedBox(
@@ -166,7 +161,6 @@ class _NeedWantSavingsCard extends StatelessWidget {
                   Expanded(flex: needPct.round().clamp(0, 100),    child: Container(color: AppColors.emerald)),
                   Expanded(flex: wantPct.round().clamp(0, 100),    child: Container(color: AppColors.orange)),
                   Expanded(flex: savingsPct.round().clamp(0, 100), child: Container(color: AppColors.blue)),
-                  // Remainder of income (uncategorised + whatever's left) shown as filler.
                   Expanded(
                     flex: (100 - needPct - wantPct - savingsPct).round().clamp(0, 100),
                     child: Container(color: AppColors.divider),
@@ -258,7 +252,6 @@ class _CategoryCard extends StatelessWidget {
               Text(formatRon(spending.amount), style: const TextStyle(color: Colors.white, fontSize: 14)),
             ]),
             const SizedBox(height: 12),
-            // _ProgressBar(value: spending.percentage, color: color),
             _ProgressBar(value: spending.percentage / 100, color: color),
           ],
         ),

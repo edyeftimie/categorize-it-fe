@@ -13,7 +13,6 @@ String _monthLabel(MonthlyAmount m) {
   return names[m.month.clamp(1, 12)];
 }
 
-// Returns [] immediately for empty categoryId so no API call fires.
 final _seriesProvider = FutureProvider.family<List<MonthlyAmount>, String>((ref, categoryId) {
   if (categoryId.isEmpty) return Future.value([]);
   return ref.read(dashboardRepositoryProvider).getMonthlySeries(categoryId);
@@ -42,7 +41,6 @@ class _State extends ConsumerState<CategoryChartScreen> {
     final categoriesAsync = ref.watch(categoriesProvider);
     final cats = categoriesAsync.valueOrNull ?? [];
 
-    // Prefer explicitly-selected category, then first from list, then '' (no-op sentinel).
     final effectiveId = _categoryId ?? (cats.isNotEmpty ? cats.first.id : '');
     final seriesAsync = ref.watch(_seriesProvider(effectiveId));
 
@@ -100,8 +98,6 @@ class _State extends ConsumerState<CategoryChartScreen> {
     );
   }
 }
-
-// ── Widgets ───────────────────────────────────────────────────────────────────
 
 class _EmptyState extends StatelessWidget {
   const _EmptyState();
@@ -169,7 +165,7 @@ class _CategoryDropdown extends StatelessWidget {
 }
 
 class _SummaryRow extends StatelessWidget {
-  final List<MonthlyAmount> series; // guaranteed non-empty
+  final List<MonthlyAmount> series; 
   const _SummaryRow({required this.series});
 
   @override
@@ -283,7 +279,7 @@ class _Tab extends StatelessWidget {
 }
 
 class _ChartCard extends StatelessWidget {
-  final List<MonthlyAmount> series; // guaranteed non-empty
+  final List<MonthlyAmount> series; 
   final bool isBar;
   const _ChartCard({required this.series, required this.isBar});
 
@@ -394,7 +390,7 @@ class _ChartCard extends StatelessWidget {
 }
 
 class _StatsRow extends StatelessWidget {
-  final List<MonthlyAmount> series; // guaranteed non-empty
+  final List<MonthlyAmount> series; 
   const _StatsRow({required this.series});
 
   @override
