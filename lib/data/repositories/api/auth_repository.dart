@@ -1,6 +1,4 @@
-import 'package:categoriseit_fe/core/services/google_sign_in_service.dart';
 import 'package:dio/dio.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/services/token_storage.dart';
 import '../../../domain/models/user.dart';
