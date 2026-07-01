@@ -110,14 +110,14 @@ class _BalanceCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Total balance', style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 14)),
+          Text('Net balance', style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 14)),
           const SizedBox(height: 4),
           Text(formatRon(data.totalBalance), style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w500)),
           const SizedBox(height: 12),
           Row(children: [
-            _MiniStat(label: 'Income',   value: formatRon(data.totalIncome)),
+            _MiniStat(label: 'Monthly Income',   value: formatRon(data.totalIncome)),
             const SizedBox(width: 12),
-            _MiniStat(label: 'Expenses', value: formatRon(data.totalExpenses)),
+            _MiniStat(label: 'Monthly Expenses', value: formatRon(data.totalExpenses)),
           ]),
         ],
       ),
